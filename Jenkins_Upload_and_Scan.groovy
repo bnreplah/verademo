@@ -127,7 +127,6 @@ pipeline{
         //             }//end else
         //         }//end script
         //         //recieves the error that the -version is required for the selected action ( parsing error )
-        //         //veracode applicationName: 'Verademo', criticality: 'VeryHigh', debug: true, fileNamePattern: '', replacementPattern: '', sandboxName: '', scanExcludesPattern: '', scanIncludesPattern: '', scanName: '', teams: '', uploadIncludesPattern: '**/**.war', vid: '7c5840c8fb2986bd5973c69e68624a0a', vkey: 'd3976d12e7eedfc523a821776e4ee151c51841ec5ad2ae306b35e1b1e6a03d3a962efefa1cc3ec6bed2281cf8dadb975c6782092cddcfd74a19f78a4be9867c9'
         //     }//end steps
         // }//end stage
       
