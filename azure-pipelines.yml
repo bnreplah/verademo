@@ -126,5 +126,3 @@ steps:
     area: '$(system.teamProject)'
     overwriteAreaPathInWorkItemsOnImport: true
     flawImportLimit: '1000'
-
-
