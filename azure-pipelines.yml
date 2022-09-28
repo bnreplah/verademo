@@ -91,7 +91,6 @@ steps:
 #    targetPath: '$(System.DefaultWorkingDirectory)'
 #    artifactName: Debug
 
-
 # - task: PublishBuildArtifacts@1
 #   displayName: Create Build Artifact for Veracode Static Pipeline Scanner Results
 #   inputs:
