@@ -143,6 +143,6 @@ jobs:
       - run: pwd
       
       - name: Veracode SCA
-        run:  curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan --allow-dirty --update-advisor ./app/pom.xml
+        run:  curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan --allow-dirty --update-advisor 
 
   
