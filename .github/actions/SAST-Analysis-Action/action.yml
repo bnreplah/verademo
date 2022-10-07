@@ -1,0 +1,9 @@
+name: "Veracode SAST Analysis Action"
+author: "Ben Halpen"
+description: "Example Action"
+
+runs:
+  setps:
+    - run: echo Testing
+      shell: bash
+      
