@@ -69,7 +69,7 @@ jobs:
           # Filename of the packaged application to upload and scan.
           file: verademo.war
           # GITHUB_TOKEN or a repo scoped PAT.
-          token: ${{github.token}} # default is ${{ github.token }}
+          #token: ${{github.token}} # default is ${{ github.token }}
           # Name of the security policy to download as a file. Required only if you want to download the configuration for a custom policy defined by your organization. After downloading the policy, you can provide this file in a subsequent command using the policy_file parameter.
           #[Optional]
           #request_policy: # optional
@@ -111,9 +111,9 @@ jobs:
           
           json_output: true # optional
           # Rename the JSON file that contains the scan results. The file is stored in the current directory. Default filename is results.json.
-          json_output_file: results.json # optional
+          #json_output_file: results.json # optional
           # Enter the filename in the current directory to save results that violate pass-fail criteria. Default is filtered_results.json.
-          filtered_json_output_file: violates_policy.json # optional
+          #filtered_json_output_file: violates_policy.json # optional
           # Enter the name of the CI/CD code repository that runs a Pipeline Scan. This parameter adds the repository name to the scan results, which can help you track scans across repositories.
           project_name: verademo # optional
           # Enter the source control URL for the CI/CD code repository that runs a Pipeline Scan.
