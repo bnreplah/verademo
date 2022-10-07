@@ -107,12 +107,12 @@ jobs:
           verbose: true # optional
           # Enter true to save the scan results as a human-readable file. Default is false.
           
-          summary_output: true # optional
+          summary_output: false # optional
           # Enter the filename of the scan results summary file. The file is stored in the current directory. Default is results.txt.
-          summary_output_file: results.txt # optional
+          #summary_output_file: results.txt # optional
           # Enter true to save the scan results in JSON format. Default is true.
           
-          json_output: true # optional
+          #json_output: true # optional
           # Rename the JSON file that contains the scan results. The file is stored in the current directory. Default filename is results.json.
           #json_output_file: results.json # optional
           # Enter the filename in the current directory to save results that violate pass-fail criteria. Default is filtered_results.json.
@@ -129,13 +129,13 @@ jobs:
           #development_stage: # optional
          # Enable debug mode. 1 for on
           debug: 1 # optional
-         # Enable the storage of a baseline file. Takes true or fales
-          store_baseline_file: true # optional
-         # Enter the branch name where the baseline file should be stored
-          store_baseline_file_branch: baseline # optional
-         # From which results should the baseline file be created. standard = full results || filtered = filtered results
-          create_baseline_from: filtered # optional
-         # Fail the build upon findings. Takes true or false
+          # Enable the storage of a baseline file. Takes true or fales
+          #store_baseline_file: true # optional
+          # Enter the branch name where the baseline file should be stored
+          #store_baseline_file_branch: baseline # optional
+          # From which results should the baseline file be created. standard = full results || filtered = filtered results
+          #create_baseline_from: filtered # optional
+          # Fail the build upon findings. Takes true or false
           fail_build: false # optional
 
 
