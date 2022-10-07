@@ -1,6 +1,10 @@
 name: Verademo Maven Build
 
-on: [push]
+on: 
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build:
@@ -17,5 +21,5 @@ jobs:
       - name: Build with Maven
         run: |
           cd app/
-          mvn clean package
+          mvn -B clean package --file app/pom.xml
      
