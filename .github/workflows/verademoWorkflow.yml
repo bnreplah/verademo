@@ -25,7 +25,7 @@ jobs:
         run: |
           cd app/
           mvn -B clean package --file pom.xml
-          ls
+          ls target/
           
 
           
