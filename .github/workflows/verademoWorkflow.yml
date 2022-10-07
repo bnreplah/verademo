@@ -54,7 +54,8 @@ jobs:
           name: verademo-artifact
           path: analysis/
       - run: pwd
-      - run: ls -la
+      - run: ls -la analysis/
+      - run: ls -la app/target/
         
 
 
