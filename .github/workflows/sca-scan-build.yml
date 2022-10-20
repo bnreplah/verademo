@@ -60,7 +60,7 @@ jobs:
           # Show update advisor
           update_advisor: true # optional, default is false
           # A git URL to work with in case the scan is not for the current repository
-          url: https://github.com/bnreplah/verademo # optional, default is 
+          #url: https://github.com/bnreplah/verademo # optional, default is 
           # The minimum CVSS value for vulnerability to be added as an issue
           #min-cvss-for-issue: # optional, default is 0
           # The maximum allowed cvss in found vulnerabilities to pass the step
