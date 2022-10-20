@@ -42,7 +42,8 @@ jobs:
             path: app/target/verademo.war
             # The desired behavior if no files are found using the provided path.
             if-no-files-found: error
-    
+      
+
       - name: Veracode Pipeline-Scan
         # You may pin to the exact commit or the version.
         # uses: veracode/Veracode-pipeline-scan-action@c94abab5dc83cccc825c05120b746835fc6f673a
@@ -127,9 +128,7 @@ jobs:
           # The conversion rule of Veracode findings to GitHub level
           #finding-rule-level: # default is 4:3:0
           
-      - name: Veracode Dependency Scanning
-        run: |
-          curl -sSL https://download.sourceclear.com/ci.sh | sh -s - scan ./pom.xml --debug
+
 #      - name: Veracode Dependency Scanning
 #        # You may pin to the exact commit or the version.
 #        # uses: veracode/veracode-sca@d8ce4a08eebf1a6c5e7759c1dc53c1172a3e7e64
