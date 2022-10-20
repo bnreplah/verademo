@@ -151,7 +151,7 @@ jobs:
           # A path within the repository where the build definition starts
           path: app/ # optional, default is .
           # Run the SRCCLR in debug mode
-          debug: true # optional, default is false
+          debug: false # optional, default is false
           # Run the SRCCLR with the `--skip-collectors` options
           #skip-collectors: # optional, default is false
           # Run the SRCCLR with the `--allow-dirty` option
