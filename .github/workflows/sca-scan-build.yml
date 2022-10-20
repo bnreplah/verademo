@@ -46,5 +46,5 @@ jobs:
       - name: Veracode Dependency Scanning
         run: |
           ls
-          curl -sSL https://download.sourceclear.com/ci.sh | sh -s scan --allow-dirty --debug
+          curl -sSL https://download.sourceclear.com/ci.sh | sh -s scan app/ --allow-dirty --debug
       
