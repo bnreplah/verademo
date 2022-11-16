@@ -128,6 +128,15 @@ jobs:
           # The conversion rule of Veracode findings to GitHub level
           #finding-rule-level: # default is 4:3:0
           
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v3.1.1
+        with:
+          # Artifact name
+          name: veracode-results-sarif # optional, default is artifact
+          # A file, directory or wildcard pattern that describes what to upload
+          path: veracode-results.sarif
+          # The desired behavior if no files are found using the provided path.
+     
 
       - name: Veracode Dependency Scanning
         # You may pin to the exact commit or the version.
