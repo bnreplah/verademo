@@ -17,4 +17,4 @@ phases:
       - echo post build
 artifacts:
   files:
-    - target/verademo.war
+    - app/target/verademo.war
