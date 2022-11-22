@@ -14,12 +14,7 @@ phases:
       - mvn -B clean package --file app/pom.xml
   post_build:
     commands:
-      - curl -O https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
-      - unzip pipeline-scan-LATEST.zip pipeline-scan.jar
-      - java -jar pipeline-scan.jar
-        --veracode_api_id "$VID"
-        --veracode_api_key "$VKEY"
-        --file "app/target/verademo.war"
+      - echo post build step
 artifacts:
   files:
     - app/target/verademo.war
