@@ -14,7 +14,12 @@ phases:
       - mvn -B clean package --file app/pom.xml
   post_build:
     commands:
-      - java -jar /opt/veracode/api-wrapper.jar -action uploadandscan -vid $VID -vkey $VKEY -appname verademo -createprofile false -version $(date +%Y-%m-%d-%H:%M) -filepath app/target/verademo.war -sandboxname aws-codebuild -createsandbox true
+      - curl -O https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
+      - unzip pipeline-scan-LATEST.zip pipeline-scan.jar
+      - java -jar pipeline-scan.jar
+        --veracode_api_id "$VID"
+        --veracode_api_key "$VKEY"
+        --file "app/target/verademo.war"
 artifacts:
   files:
     - app/target/verademo.war
