@@ -14,7 +14,7 @@ phases:
       - mvn -B clean package --file app/pom.xml
   post_build:
     commands:
-      - java -jar /opt/veracode/api-wrapper.jar -action uploadandscan -vid $VERACODE_API_ID -vkey $VERACODE_API_KEY -appname verademo -createprofile false -version $(date +%Y-%m-%d-%H:%M) -filepath target/verademo.war -sandboxname aws-codebuild -createsandbox true
+      - echo post build
 artifacts:
   files:
     - target/verademo.war
