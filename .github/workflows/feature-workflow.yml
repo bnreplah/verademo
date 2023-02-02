@@ -1,0 +1,136 @@
+name: Feature Branch Workflow
+
+
+
+on:
+  push:
+    branches: [ feature ]
+  pull_request:
+    branches: [ feature ]
+
+
+
+jobs:
+  # This will build the Java application
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-java@v1
+      with: 
+        java-version: 1.8
+    - name: Cache Maven packages
+      uses: actions/cache@v2
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+    - name: Build with Maven
+      run: mvn clean package
+          
+    - uses: actions/upload-artifact@v1
+      with:
+        name: verademo.war
+        path: target/verademo.war
+    
+  # Upload and Scan with Veracode (Sandbox scan)
+  veracode-sandbox-scan:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v2
+      - name: get archive
+        uses: actions/download-artifact@v2
+        with:
+          name: verademo.war
+          path: .
+      - name: Veracode Upload and Scan Action Step
+        uses: veracode/veracode-uploadandscan-action@0.2.1
+        id: upload_and_scan
+        with:
+          appname: 'Verademo'
+          version: '${{ github.run_id }}'
+          filepath: 'verademo.war'
+          vid: '${{ secrets.VERACODE_API_ID }}'
+          vkey: '${{ secrets.VERACODE_API_KEY }}'
+          createsandbox: true
+          sandboxname: 'Github - ${{ github.ref }}'
+
+
+#    - name: Invoke deployment hook
+#      uses: distributhor/workflow-webhook@v1
+#      env:
+#        webhook_type: 'json-extended'
+#        webhook_url: https://a6mp4czm6k.execute-api.eu-central-1.amazonaws.com/dev/github
+#        webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
+#        data: '{"commit":"${{github.sha}}","run_id":"${{github.run_id}}","veracode_app_name":"Verademo","veracode_sandbox_name":"Github - ${{ github.ref }}"}' 
+        
+        
+        
+  # Import flaws into code scanning alerts
+  import-flaws-code-scanning-alerts:
+    runs-on: ubuntu-latest
+    needs: veracode-sandbox-scan
+    steps:
+      - name: Veracode Flaw Importer
+        if: ${{ failure() }}
+        uses: julz0815/veracode_flaw_importer@main
+        env:
+          VERACODE_API_KEY_ID: '${{ secrets.VERACODE_API_ID }}'
+          VERACODE_API_KEY_SECRET: '${{ secrets.VERACODE_API_KEY }}'
+        id: import_flaws
+        with:
+          app_name: 'Verademo'
+          sandbox_name: 'Github - ${{ github.ref }}'
+      - uses: actions/upload-artifact@master
+        with:
+          name: flaws
+          path: /home/runner/work/Verademo/Verademo/fullResults.json
+      - uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: /home/runner/work/Verademo/Verademo/fullResults.json
+
+
+# Import flaws as issues
+  get-policy-flaws:
+    runs-on: ubuntu-latest
+    needs: veracode-sandbox-scan
+    container: 
+      image: veracode/api-signing:latest
+    steps:
+      - name: get policy flaws
+        run: |
+          cd /tmp
+          export VERACODE_API_KEY_ID=${{ secrets.VERACODE_API_ID }}
+          export VERACODE_API_KEY_SECRET=${{ secrets.VERACODE_API_KEY }}
+          guid=$(http --auth-type veracode_hmac GET "https://api.veracode.com/appsec/v1/applications?name=Verademo" | jq -r '._embedded.applications[0].guid') 
+          echo GUID: ${guid}
+          total_flaws=$(http --auth-type veracode_hmac GET "https://api.veracode.com/appsec/v2/applications/${guid}/findings?scan_type=STATIC&violates_policy=True" | jq -r '.page.total_elements')
+          echo TOTAL_FLAWS: ${total_flaws}
+          http --auth-type veracode_hmac GET "https://api.veracode.com/appsec/v2/applications/${guid}/findings?scan_type=STATIC&violates_policy=True&size=${total_flaws}" > policy_flaws.json
+
+      - name: save results file
+        uses: actions/upload-artifact@v2
+        with:
+          name: policy-flaws
+          path: /tmp/policy_flaws.json
+
+
+
+
+
+# This step will import flaws from the step above
+  import-policy-flaws:
+    needs: get-policy-flaws
+    runs-on: ubuntu-latest
+    steps:
+      - name: get flaw file
+        uses: actions/download-artifact@v2
+        with:
+          name: policy-flaws
+          path: /tmp
+
+      - name: import flaws as issues
+        uses: buzzcode/veracode-flaws-to-issues@v1
+        with:
+          scan-results-json: 'policy_flaws.json'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
