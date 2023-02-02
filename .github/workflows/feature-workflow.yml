@@ -58,7 +58,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: verademo.war
-          path: .
+          path: app/target/verademo.war
       - name: Veracode Upload and Scan Action Step
         uses: veracode/veracode-uploadandscan-action@0.2.1
         id: upload_and_scan
