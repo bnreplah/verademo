@@ -36,7 +36,7 @@ jobs:
         uses: actions/upload-artifact@v2.2.4
         with:
             # Artifact name
-            name: verademo-artifact
+            name: verademo.war
             # optional, default is artifact
             # A file, directory or wildcard pattern that describes what to upload
             path: app/target/verademo.war
@@ -48,6 +48,13 @@ jobs:
       runs-on: ubuntu-latest
       name: pipeline_scan
       steps:
+        - name: Download a Build Artifact
+          uses: actions/download-artifact@v3.0.2
+          with:
+            # Artifact name
+            name: verademo.war # optional
+            # Destination path
+            path: app/target/verademo.war # optional
         - name: Veracode Pipeline-Scan
           # You may pin to the exact commit or the version.
           # uses: veracode/Veracode-pipeline-scan-action@c94abab5dc83cccc825c05120b746835fc6f673a
