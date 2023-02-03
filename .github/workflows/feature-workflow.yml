@@ -102,7 +102,7 @@ jobs:
         # platform selected modules
         #selected: # optional
         # selected modules like from previous scan
-        selectedpreviously: true # optional
+        #selectedpreviously: true # optional
         # teams
         #teams: # optional
         # teams
