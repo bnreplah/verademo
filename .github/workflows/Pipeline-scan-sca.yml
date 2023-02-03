@@ -31,6 +31,7 @@ jobs:
           cd app/
           mvn -B clean package --file pom.xml
           ls target/
+          cd ..
           
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
