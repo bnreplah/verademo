@@ -53,25 +53,15 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - uses: actions/checkout@v2
-      - name: get archive
-        uses: actions/download-artifact@v2
-        with:
-          name: verademo.war
-          path: app/target/verademo.war
-      - name: Veracode Upload and Scan Action Step
-        uses: veracode/veracode-uploadandscan-action@0.2.1
-        id: upload_and_scan
-        with:
-          appname: 'Verademo'
-          version: '${{ github.run_id }}'
-          filepath: 'verademo.war'
-          vid: '${{ secrets.VERACODE_API_ID }}'
-          vkey: '${{ secrets.VERACODE_API_KEY }}'
-          createsandbox: true
-          sandboxname: 'Github - ${{ github.ref }}'
 
-
+    - name: Download a Build Artifact
+      uses: actions/download-artifact@v3.0.2 
+      with:
+        # Artifact name
+        name: verademo.war # optional
+        # Destination path
+        path: app/target/verademo.war # optional    
+    
 #    - name: Invoke deployment hook
 #      uses: distributhor/workflow-webhook@v1
 #      env:
