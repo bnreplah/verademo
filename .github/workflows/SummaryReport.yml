@@ -37,7 +37,7 @@ jobs:
     - name: set env creds
       run: |
         echo "APP_ID=$(cat app_id.txt)" >> $GITHUB_ENV
-        env.APP_ID = $APP_ID
+        $APP_ID = $APP_ID
     
     - name: Verify_Variable
       run: echo "APP_ID=$APP_ID"
@@ -52,10 +52,11 @@ jobs:
         API_KEY: ${{ secrets.VERACODE_API_KEY }} 
         APP_ID: ${{ env.APP_ID }}
        run: |
+         echo "$APP_ID"
          docker run --rm \
          -e VERACODE_API_KEY_ID=${{ env.API_ID }} \
          -e VERACODE_API_KEY_SECRET=${{ env.API_KEY }} \
           veracode/api-signing \
           http --auth-type veracode_hmac GET \
-          https://api.veracode.com/appsec/v2/applications/${{ env.APP_ID }}/summary_report \
+          https://api.veracode.com/healthcheck/status
   
