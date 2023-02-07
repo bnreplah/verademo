@@ -10,7 +10,7 @@ on:
 env:
   API_ID: ${{ secrets.VERACODE_API_ID }}
   API_KEY: ${{ secrets.VERACODE_API_KEY }}
-  APP_NAME: VeraGHA
+  APP_NAME: Verademo
 
 
 jobs: 
