@@ -37,7 +37,7 @@ jobs:
     - name: set env creds
       run: |
         echo "APP_ID=$(cat app_id.txt)" >> $GITHUB_ENV
-        $APP_ID = $APP_ID
+
     
     - name: Verify_Variable
       run: echo "APP_ID=$APP_ID"
