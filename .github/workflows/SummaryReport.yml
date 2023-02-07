@@ -29,7 +29,7 @@ jobs:
           -e VERACODE_API_KEY_SECRET=${{ env.API_KEY }} \
           veracode/api-signing \
           http --auth-type veracode_hmac GET \
-          https://api.veracode.com/appsec/v1/applications/?name=${{ env.APP_NAME }} \
+          https://api.veracode.com/appsec/v1/applications/?name=$APP_NAME \
           | jq -r '.applications[1].guid')
         echo "$GUID" > app_id.txt
         $APP_ID = $GUID
