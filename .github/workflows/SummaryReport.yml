@@ -36,6 +36,13 @@ jobs:
           | jq -r '._embedded.applications[0].guid')
         echo "$GUID" > app_id.txt
         echo "APP_ID=$GUID" >> $GITHUB_ENV
+        echo "$APP_ID"
+        docker run --rm \
+         -e VERACODE_API_KEY_ID=${{ env.API_ID }} \
+         -e VERACODE_API_KEY_SECRET=${{ env.API_KEY }} \
+          veracode/api-signing \
+          http --auth-type veracode_hmac GET \
+          https://api.veracode.com/healthcheck/status
 
         
 #    - name: set env creds
