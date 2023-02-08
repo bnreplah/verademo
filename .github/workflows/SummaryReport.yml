@@ -36,7 +36,7 @@ jobs:
           | jq -r '._embedded.applications[0].guid')
         echo "$GUID" > app_id.txt
         echo "APP_ID=$GUID" >> $GITHUB_ENV
-        echo ${{ env.APP_ID }}
+
         
 #    - name: set env creds
 #      id: set_env
@@ -53,6 +53,9 @@ jobs:
      steps:
      
      - name: Verify_Variable
+       run: |
+        echo "APP_ID=$(cat app_id.txt)" >> $GITHUB_ENV
+     - name: check_variable
        run: |
         echo "APP_ID="${{ needs.veracode-api-call.env.APP_ID }}"
         echo "-- ${{ needs.veracode-api-call.env.APP_ID }}"
