@@ -39,7 +39,7 @@ jobs:
         docker run --rm \
          -e VERACODE_API_KEY_ID=${{ env.API_ID }} \
          -e VERACODE_API_KEY_SECRET=${{ env.API_KEY }} \
-          veracode/api-signing:cmd \
+          veracode/api-signing \
           http --auth-type veracode_hmac GET \
           https://api.veracode.com/healthcheck/status
 
