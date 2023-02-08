@@ -8,8 +8,8 @@ on:
     workflow_dispatch: 
 
 env:
-  API_ID: ${{ secrets.VERACODE_API_ID }}
-  API_KEY: ${{ secrets.VERACODE_API_KEY }}
+  VERACODE_API_KEY_ID: ${{ secrets.VERACODE_API_ID }}
+  VERACODE_API_KEY_SECRET: ${{ secrets.VERACODE_API_KEY }}
   APP_NAME: Verademo
   APP_ID: ""
   
@@ -23,9 +23,6 @@ jobs:
     steps:
     - name: Get Application GUID for Verademo One
       id: get_guid
-      env: 
-        API_ID: ${{ secrets.VERACODE_API_ID }}
-        API_KEY: ${{ secrets.VERACODE_API_KEY }}
       run: |
         GUID=$(docker run --rm \
           -e VERACODE_API_KEY_ID=${{ env.API_ID }} \
@@ -37,6 +34,7 @@ jobs:
         echo "$GUID" > app_id.txt
         echo "APP_ID=$GUID" >> $GITHUB_ENV
         echo "$APP_ID"
+        
         docker run --rm \
          -e VERACODE_API_KEY_ID=${{ env.API_ID }} \
          -e VERACODE_API_KEY_SECRET=${{ env.API_KEY }} \
@@ -45,40 +43,19 @@ jobs:
           https://api.veracode.com/healthcheck/status
 
         
+    - name: API Call
+      id: api_call
+      run: |
+        docker run --rm \
+          veracode/api-signing \
+          http --auth-type veracode_hmac GET \
+          https://api.veracode.com/api/authn/v2/api_credentials
+      
 #    - name: set env creds
 #      id: set_env
 #      run: |
 #        echo "APP_ID=$(cat app_id.txt)" >> $GITHUB_ENV
 
     
-    - name: Verify_Variable
-      run: echo "APP_ID=$APP_ID"
-      
-  Get_Summary_Report:
-     runs-on: ubuntu-latest
-     needs: veracode-api-call
-     steps:
-     
-     - name: Verify_Variable
-       run: |
-        echo "APP_ID=$(cat app_id.txt)" >> $GITHUB_ENV
-     - name: check_variable
-       run: |
-        echo "APP_ID="${{ needs.veracode-api-call.env.APP_ID }}"
-        echo "-- ${{ needs.veracode-api-call.env.APP_ID }}"
-    # echo "-- ${{ needs.veracode-api-call.outputs.output1 }}"
-     
-     - name: Summary
-       env: 
-        API_ID: ${{ secrets.VERACODE_API_ID }}
-        API_KEY: ${{ secrets.VERACODE_API_KEY }} 
-        APP_ID: ${{ env.APP_ID }}
-       run: |
-         echo "$APP_ID"
-         docker run --rm \
-         -e VERACODE_API_KEY_ID=${{ env.API_ID }} \
-         -e VERACODE_API_KEY_SECRET=${{ env.API_KEY }} \
-          veracode/api-signing \
-          http --auth-type veracode_hmac GET \
-          https://api.veracode.com/healthcheck/status
+    
   
