@@ -39,7 +39,7 @@ jobs:
         docker run --rm \
          -e VERACODE_API_KEY_ID=${{ env.API_ID }} \
          -e VERACODE_API_KEY_SECRET=${{ env.API_KEY }} \
-          veracode/api-signing \
+          veracode/api-signing:cmd \
           http --auth-type veracode_hmac GET \
           https://api.veracode.com/healthcheck/status
 
@@ -48,7 +48,9 @@ jobs:
       id: api_call
       run: |
         docker run --rm \
-          veracode/api-signing \
+         veracode/api-signing:cmd \
+         -e VERACODE_API_KEY_ID=${{ env.API_ID }} \
+         -e VERACODE_API_KEY_SECRET=${{ env.API_KEY }} \
           http --auth-type veracode_hmac GET \
           https://api.veracode.com/api/authn/v2/api_credentials
     - name: API_call_APP-ID
@@ -57,7 +59,7 @@ jobs:
         docker run --rm \
          -e VERACODE_API_KEY_ID=${{ env.API_ID }} \
          -e VERACODE_API_KEY_SECRET=${{ env.API_KEY }} \
-          veracode/api-signing \
+          veracode/api-signing:cmd \
           http --auth-type veracode_hmac GET \
           https://api.veracode.com/appsec/v2/applications/${{env.APP_ID}}/summary_report
         
