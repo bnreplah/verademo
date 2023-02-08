@@ -18,7 +18,7 @@ jobs:
   veracode-api-call:
     runs-on: ubuntu-latest
     outputs:
-        output1: ${{steps.set_env.outputs}}
+        output1: ${{steps.set_env.outputs.APP_ID}}
     steps:
     - name: Get Application GUID for Verademo One
       id: get_guid
@@ -52,8 +52,9 @@ jobs:
      
      - name: Verify_Variable
        run: |
-        echo "APP_ID=$APP_ID"
-        echo "${{ env.APP_ID }}"
+        echo "APP_ID="${{ needs.veracode-api-call.env.APP_ID }}"
+        echo "${{ needs.veracode-api-call.env.APP_ID }}"
+        echo "${{ needs.veracode-api-call.outputs.output1 }}"
      
      - name: Summary
        env: 
