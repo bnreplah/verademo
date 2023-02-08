@@ -55,8 +55,8 @@ jobs:
      - name: Verify_Variable
        run: |
         echo "APP_ID="${{ needs.veracode-api-call.env.APP_ID }}"
-        echo "${{ needs.veracode-api-call.env.APP_ID }}"
-        echo "${{ needs.veracode-api-call.outputs.output1 }}"
+        echo "-- ${{ needs.veracode-api-call.env.APP_ID }}"
+    # echo "-- ${{ needs.veracode-api-call.outputs.output1 }}"
      
      - name: Summary
        env: 
