@@ -20,13 +20,14 @@ jobs:
           export VERACODE_API_KEY_SECRET=${{ env.API_KEY }}
           ID=$(http --auth-type veracode_hmac GET "https://api.veracode.com/appsec/v1/applications/?name=${{ env.APP_NAME }}" | jq -r '._embedded.applications[0].id')
           echo GUID: ${ID}
-          http --auth-type=veracode_hmac -o VerademoSBOM.json "https://api.veracode.com/srcclr/sbom/v1/targets/${ID}/cyclonedx?type=application"
-
+          http --auth-type=veracode_hmac -o verademo-SBOM.json "https://api.veracode.com/srcclr/sbom/v1/targets/${ID}/cyclonedx?type=application"
+          ls
+          cat verademo-SBOM.json
         
       - name: upload PDF report
         uses: actions/upload-artifact@v2
         with:
           name: SBOM
-          path: /tmp/VerademoSBOM.json
+          path: /tmp/verademo-SBOM.json
 
 
