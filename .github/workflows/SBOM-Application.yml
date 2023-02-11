@@ -30,7 +30,3 @@ jobs:
           path: /tmp/VerademoSBOM.json
 
 
-
-
-
-http --auth-type=veracode_hmac "https://api.veracode.com/srcclr/sbom/v1/targets/{applicationGuid}/cyclonedx?type=application"
