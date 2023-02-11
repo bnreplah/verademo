@@ -1,5 +1,5 @@
 name: Summary Report PDF
-author: Justin B.
+
 
 on: workflow_dispatch
 env:
