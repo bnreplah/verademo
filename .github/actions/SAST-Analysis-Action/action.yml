@@ -1,9 +1,32 @@
-name: "Veracode SAST Analysis Action"
-author: "Ben Halpen"
-description: "Example Action"
+name: Summary Report PDF
+author: Justin B.
 
-runs:
-  setps:
-    - run: echo Testing
-      shell: bash
-      
+on: workflow_dispatch
+env:
+  API_ID: ${{ secrets.VERACODE_API_ID }}
+  API_KEY: ${{ secrets.VERACODE_API_KEY }}
+  APP_NAME: VeraGHA
+
+jobs:
+
+  get_summary_report:
+    runs-on: ubuntu-latest
+    container:
+      image: veracode/api-signing:latest
+    steps: 
+      - name: get summary report
+        run: |
+          cd /tmp
+          export VERACODE_API_KEY_ID=${{ env.API_ID }}
+          export VERACODE_API_KEY_SECRET=${{ env.API_KEY }}
+          ID=$(http --auth-type veracode_hmac GET "https://api.veracode.com/appsec/v1/applications/?name=${{ env.APP_NAME }}" | jq -r '._embedded.applications[0].id')
+          echo GUID: ${ID}
+          BUILD_ID=$(http --auth-type veracode_hmac GET "https://analysiscenter.veracode.com/api/5.0/getbuildinfo.do?app_id=$ID" | sed -n 's/.*build_id="\([0-9]*\)".*/\1/p')
+          echo Build ID: $BUILD_ID
+          http --auth-type veracode_hmac -o summaryreport.pdf GET "https://analysiscenter.veracode.com/api/4.0/summaryreportpdf.do?build_id=$BUILD_ID"
+        
+      - name: upload PDF report
+        uses: actions/upload-artifact@v2
+        with:
+          name: summary-report
+          path: /tmp/summaryreport.pdf
