@@ -1,0 +1,36 @@
+name: Summary Report PDF
+
+on: workflow_dispatch
+env:
+  API_ID: ${{ secrets.VERACODE_API_ID }}
+  API_KEY: ${{ secrets.VERACODE_API_KEY }}
+  APP_NAME: Verademo
+
+jobs:
+
+  get_summary_report:
+    runs-on: ubuntu-latest
+    container:
+      image: veracode/api-signing:latest
+    steps: 
+      - name: get SBOM on latest scan
+        run: |
+          cd /tmp
+          export VERACODE_API_KEY_ID=${{ env.API_ID }}
+          export VERACODE_API_KEY_SECRET=${{ env.API_KEY }}
+          ID=$(http --auth-type veracode_hmac GET "https://api.veracode.com/appsec/v1/applications/?name=${{ env.APP_NAME }}" | jq -r '._embedded.applications[0].id')
+          echo GUID: ${ID}
+          http --auth-type=veracode_hmac -o VerademoSBOM.json "https://api.veracode.com/srcclr/sbom/v1/targets/${ID}/cyclonedx?type=application"
+
+        
+      - name: upload PDF report
+        uses: actions/upload-artifact@v2
+        with:
+          name: SBOM
+          path: /tmp/VerademoSBOM.json
+
+
+
+
+
+http --auth-type=veracode_hmac "https://api.veracode.com/srcclr/sbom/v1/targets/{applicationGuid}/cyclonedx?type=application"
