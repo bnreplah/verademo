@@ -65,7 +65,7 @@ jobs:
             # vkey
             vkey: ${{ secrets.VERACODE_API_KEY }}
             # Filename of the packaged application to upload and scan.
-            file: app/target/verademo.war
+            file: target/verademo.war
             # GITHUB_TOKEN or a repo scoped PAT.
             token: ${{ secrets.GH_TOKEN }} # default is ${{ github.token }}
             # Name of the security policy to download as a file. Required only if you want to download the configuration for a custom policy defined by your organization. After downloading the policy, you can provide this file in a subsequent command using the policy_file parameter.
