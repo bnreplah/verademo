@@ -1,4 +1,4 @@
-name: Summary Report PDF
+name: SBOM generation
 
 on: workflow_dispatch
 
