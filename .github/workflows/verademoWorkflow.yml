@@ -1,4 +1,4 @@
-name: Maven Build and Scan MultiJob
+name: Verademo Default Workflow - Maven Build and Scan MultiJob
 
 on:
 #  push:
