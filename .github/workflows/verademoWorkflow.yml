@@ -1,4 +1,4 @@
-name: Verademo Maven Build
+name: Maven Build and Scan MultiJob
 
 on:
 #  push:
