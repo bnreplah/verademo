@@ -65,7 +65,7 @@ jobs:
             # vkey
             vkey: ${{ secrets.VERACODE_API_KEY }}
             # Filename of the packaged application to upload and scan.
-            file: target/verademo.war
+            file: app/target/verademo.war
             # GITHUB_TOKEN or a repo scoped PAT.
             token: ${{ secrets.GH_TOKEN }} # default is ${{ github.token }}
             # Name of the security policy to download as a file. Required only if you want to download the configuration for a custom policy defined by your organization. After downloading the policy, you can provide this file in a subsequent command using the policy_file parameter.
@@ -93,7 +93,7 @@ jobs:
             # Enter true to save the scan results as a human-readable file. Default is false.
             summary_output: true # optional
             # Enter the filename of the scan results summary file. The file is stored in the current directory. Default is results.txt.
-            summary_output_file: results.txt # optional
+            summary_output_file: results.json # optional
             # Enter true to save the scan results in JSON format. Default is true.
             #json_output: # optional
             # Rename the JSON file that contains the scan results. The file is stored in the current directory. Default filename is results.json.
@@ -127,17 +127,17 @@ jobs:
             # Artifact name
             name: Summary-Output-File # optional, default is artifact
             # A file, directory or wildcard pattern that describes what to upload
-            path: results.txt
-            # The desired behavior if no files are found using the provided path.
-
-        - name: Upload a Build Artifact
-          uses: actions/upload-artifact@v3.1.1
-          with:
-            # Artifact name
-            name: Pipeline-Scan-Results # optional, default is artifact
-            # A file, directory or wildcard pattern that describes what to upload
             path: results.json
             # The desired behavior if no files are found using the provided path.
+
+#        - name: Upload a Build Artifact
+#          uses: actions/upload-artifact@v3.1.1
+#          with:
+#            # Artifact name
+#            name: Pipeline-Scan-Results # optional, default is artifact
+#            # A file, directory or wildcard pattern that describes what to upload
+#            path: results.json
+#            # The desired behavior if no files are found using the provided path.
     
   results_to_sarif:
       needs: pipeline_scan
