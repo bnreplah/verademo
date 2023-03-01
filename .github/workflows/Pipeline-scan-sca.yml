@@ -131,6 +131,15 @@ jobs:
       runs-on: ubuntu-latest
       name: import pipeline results to sarif
       steps:
+        - name: Download a Build Artifact
+          uses: actions/download-artifact@v3.0.2
+          with:
+            # Artifact name
+            name: results.json # optional
+            # Destination path
+            path: results.json # optional
+      
+      
         - name: Convert pipeline scan output to SARIF format
           id: convert
           uses: Veracode/veracode-pipeline-scan-results-to-sarif@v1.0.5
@@ -145,6 +154,18 @@ jobs:
           uses: github/codeql-action/upload-sarif@v2
           with: # Path to SARIF file relative to the root of the repository
             sarif_file: veracode-results.sarif
+   
+        - name: Veracode scan results to GitHub issues Action
+          # You may pin to the exact commit or the version.
+          # uses: veracode/veracode-flaws-to-issues@e03c95a2d9ce730870fe160ff77bbce3b7f0e32d
+          uses: veracode/veracode-flaws-to-issues@v1.0.0
+          with:
+              # Scan results file
+              scan-results-json: filtered_results.json # default is filtered_results.json
+              # GitHub token to access the repo
+              github-token: ${{ secrets.GH_TOKEN }} 
+              # Delay (in seconds) between entering Issues into GitHub (due to rate limiting)
+              #wait-time: # optional, default is 2
    
   results_to_Issues:
         needs: build
@@ -163,7 +184,7 @@ jobs:
               # Show update advisor
               update_advisor: true # optional, default is false
               # A git URL to work with in case the scan is not for the current repository
-              #url: https://github.com/bnreplah/verademo # optional, default is 
+              url: https://github.com/bnreplah/verademo # optional, default is 
               # The minimum CVSS value for vulnerability to be added as an issue
               #min-cvss-for-issue: # optional, default is 0
               # The maximum allowed cvss in found vulnerabilities to pass the step
@@ -173,23 +194,13 @@ jobs:
               # A path within the repository where the build definition starts
               path: app/ # optional, default is .
               # Run the SRCCLR in debug mode
-              debug: false # optional, default is false
+              debug: true # optional, default is false
               # Run the SRCCLR with the `--skip-collectors` options
               #skip-collectors: # optional, default is false
               # Run the SRCCLR with the `--allow-dirty` option
               allow-dirty: true # optional, default is false
               # Run the SRCCLR with the `--recursive` option
-              #recursive: # optional, default is false
+              recursive: true # optional, default is false
 
-          - name: Veracode scan results to GitHub issues Action
-            # You may pin to the exact commit or the version.
-            # uses: veracode/veracode-flaws-to-issues@e03c95a2d9ce730870fe160ff77bbce3b7f0e32d
-            uses: veracode/veracode-flaws-to-issues@v1.0.0
-            with:
-              # Scan results file
-              scan-results-json: filtered_results.json # default is filtered_results.json
-              # GitHub token to access the repo
-              github-token: ${{ secrets.GH_TOKEN }} 
-              # Delay (in seconds) between entering Issues into GitHub (due to rate limiting)
-              #wait-time: # optional, default is 2
+          
 
