@@ -60,9 +60,9 @@ jobs:
             # Amount of time, in minutes, for the Pipeline Scan to wait before reporting an unsuccessful scan if the scan does not complete. Default is 60 minutes, which is also the maximum value.
             #timeout: # optional
             # Enter true to show detailed messages for each issue in the results summary.
-            #issue_details: # optional
+            issue_details: true # optional
             # Enter true to show a human-readable results summary on the console. Default is true.
-            #summary_display: # optional
+            summary_display: true # optional
             # Enter true to show the JSON containing the scan results on the console. Default is false.
             #json_display: # optional
             # Enter true to display detailed messages in the scan results. Default is false.
@@ -72,9 +72,9 @@ jobs:
             # Enter the filename of the scan results summary file. The file is stored in the current directory. Default is results.txt.
             summary_output_file: results.txt # optional
             # Enter true to save the scan results in JSON format. Default is true.
-            #json_output: # optional
+            json_output: true # optional
             # Rename the JSON file that contains the scan results. The file is stored in the current directory. Default filename is results.json.
-            #json_output_file: # optional
+            json_output_file: results.json # optional
             # Enter the filename in the current directory to save results that violate pass-fail criteria. Default is filtered_results.json.
             #filtered_json_output_file: # optional
             # Enter the name of the CI/CD code repository that runs a Pipeline Scan. This parameter adds the repository name to the scan results, which can help you track scans across repositories.
@@ -135,7 +135,7 @@ jobs:
           uses: actions/download-artifact@v3.0.2
           with:
             # Artifact name
-            name: results.json # optional
+            name: Pipeline-Scan-Results # optional
             # Destination path
             path: results.json # optional
       
