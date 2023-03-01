@@ -24,6 +24,8 @@ jobs:
           BUILD_ID=$(http --auth-type veracode_hmac GET "https://analysiscenter.veracode.com/api/5.0/getbuildinfo.do?app_id=$ID" | sed -n 's/.*build_id="\([0-9]*\)".*/\1/p')
           echo Build ID: $BUILD_ID
           http --auth-type veracode_hmac -o ${{ env.APP_NAME }}-SBOM.json GET "https://api.veracode.com/srcclr/sbom/v1/targets/$ID/cyclonedx?type=application"
+          ls
+          cat ${{ env.APP_NAME }}-SBOM.json
         
       - name: upload SBOM report
         uses: actions/upload-artifact@v2
