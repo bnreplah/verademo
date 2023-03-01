@@ -19,12 +19,10 @@ jobs:
           cd /tmp
           export VERACODE_API_KEY_ID=${{ env.API_ID }}
           export VERACODE_API_KEY_SECRET=${{ env.API_KEY }}
-          ID=$(http --auth-type veracode_hmac GET "https://api.veracode.com/appsec/v1/applications/?name=${{ env.APP_NAME }}" | jq -r '._embedded.applications[0].id')
-          echo GUID: ${ID}
-          BUILD_ID=$(http --auth-type veracode_hmac GET "https://analysiscenter.veracode.com/api/5.0/getbuildinfo.do?app_id=$ID" | sed -n 's/.*build_id="\([0-9]*\)".*/\1/p')
-          echo Build ID: $BUILD_ID
-          http --auth-type veracode_hmac GET "https://api.veracode.com/srcclr/sbom/v1/targets/$ID/cyclonedx?type=application" >> ${{ env.APP_NAME }}-SBOM.json
-          http --auth-type=veracode_hmac "https://api.veracode.com/srcclr/sbom/v1/targets/${ID}/cyclonedx?type=application"
+          GUID=$(http --auth-type veracode_hmac GET "https://api.veracode.com/appsec/v1/applications/?name=${{ env.APP_NAME }}" | jq -r '._embedded.applications[0].guid')
+          echo GUID: ${GUID}
+          http --auth-type veracode_hmac GET "https://api.veracode.com/srcclr/sbom/v1/targets/$GUID/cyclonedx?type=application" >> ${{ env.APP_NAME }}-SBOM.json
+          http --auth-type=veracode_hmac "https://api.veracode.com/srcclr/sbom/v1/targets/${GUID}/cyclonedx?type=application"
           ls
           cat ${{ env.APP_NAME }}-SBOM.json
         
