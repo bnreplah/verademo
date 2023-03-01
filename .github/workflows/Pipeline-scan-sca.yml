@@ -26,6 +26,7 @@ jobs:
           cd app/
           mvn -B clean package --file pom.xml
           ls target/
+          ls -la target/verademo.war
           
       - name: Veracode Pipeline-Scan
         # You may pin to the exact commit or the version.
