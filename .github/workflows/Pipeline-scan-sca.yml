@@ -148,8 +148,10 @@ jobs:
             path: verademo.war # optional
       
       
-        - name: Build with Maven
+        - name: Reading permissions
           run: |
+            chmod +rx verademo.war
+            chmod +rx results.json
             ls -la verademo.war
             ls -la results.json
             
