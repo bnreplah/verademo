@@ -1,4 +1,4 @@
-name: SCA Verademo Maven Build 2
+name: SCA Verademo Maven Build [Single Job]
 
 on:
   workflow_dispatch:
