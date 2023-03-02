@@ -1,0 +1,45 @@
+ 
+resources:
+  - name: mvn_repo
+    type: GitRepo
+    configuration:
+      gitProvider: {{ .Values.gitIntegration }}                     
+      path: {{ .Values.gitRepositoryPath }}
+      branches:
+        include: master
+
+pipelines:
+  - name: mvn_repo
+    steps:
+      - name: mvn_build
+        type: MvnBuild
+        configuration:
+          #inherits all the tags from bash; https://www.jfrog.com/confluence/display/JFROG/Bash
+          mvnCommand:           clean install      # optional
+          #sourceLocation:       <string>      # optional
+          #resolverSnapshotRepo: <string>      # optional
+          #resolverReleaseRepo:  <string>      # optional
+          #deployerSnapshotRepo: <string>      # optional
+          #deployerReleaseRepo:  <string>      # optional
+          #forceXrayScan:        <string>      # optional
+          #failOnScan:           <boolean>     # default true
+          #autoPublishBuildInfo: <string>      # optional
+          #configFileLocation:   <string>      # optional
+          #configFileName:       <string>      # optional
+ 
+          integrations:
+            - name:          {{ .Values.artifactoryIntegration }} #<Artifactory integration>  # required
+          inputResources:
+            - name:         mvn_repo #<GitRepo resource>         # required
+            - name:         <FileSpec resource>        # optional
+          #outputResources:
+          #  - name:         <BuildInfo resource>       # if autoPublishBuildInfo is true
+ 
+        execution:
+          onStart:
+            - echo "Preparing for work..."
+          onSuccess:
+            - echo "Job well done!"
+          onFailure:
+            - echo "uh oh, something went wrong"
+          onComplete:                      
