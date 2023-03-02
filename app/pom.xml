@@ -150,4 +150,16 @@
 			</plugin>
 		</plugins>
 	</build>
+	<distributionManagement>
+	    <repository>
+		<id>central</id>
+		<name>a0lqbwiokmcy9-artifactory-primary-0-releases</name>
+		<url>https://veracodedemo01.jfrog.io/artifactory/Verademo</url>
+	    </repository>
+	    <snapshotRepository>
+		<id>snapshots</id>
+		<name>a0lqbwiokmcy9-artifactory-primary-0-snapshots</name>
+		<url>https://veracodedemo01.jfrog.io/artifactory/Verademo</url>
+	    </snapshotRepository>
+	</distributionManagement>
 </project>
