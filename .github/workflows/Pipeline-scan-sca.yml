@@ -35,7 +35,7 @@ jobs:
       - name: Veracode Pipeline-Scan
         # You may pin to the exact commit or the version.
         # uses: veracode/Veracode-pipeline-scan-action@c94abab5dc83cccc825c05120b746835fc6f673a
-        uses: veracode/Veracode-pipeline-scan-action@pipeline-scan-beta-v0.0.4
+        uses: veracode/Veracode-pipeline-scan-action@v1.0.3
         with:
             # vid
             vid: ${{ secrets.VERACODE_API_ID }}
@@ -92,11 +92,13 @@ jobs:
             # Enable the storage of a baseline file. Takes true or fales
             store_baseline_file: true # optional
             # Enter the branch name where the baseline file should be stored
-            store_baseline_file_branch: feature # optional
+            store_baseline_file_branch: baseline # optional
             # From which results should the baseline file be created. standard = full results || filtered = filtered results
             create_baseline_from: standard # optional
             # Fail the build upon findings. Takes true or false
             fail_build: false # optional
+            
+            
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
