@@ -5,12 +5,12 @@ steps:
     execution:
       onStart:
         - >-
-          echo "onStart can be used to do some setup or initialization of your dependencies to prepare for the execution."
+          echo "onStart can be used to do some setup or initialization of your dependencies to prepare for the execution.
       onExecute:
         - >-
           echo "onExecute is the main section where you would issue your build/test commands"
         - jfrog --version
-        - 
+        - java --version
       onSuccess:
         - >-
           echo "onSuccess executes if the onStart or onExecute sections completed without errors"
