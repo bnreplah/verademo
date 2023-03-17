@@ -3,7 +3,7 @@ valuesFilePath: ./values.yml
  
 resources:
   - name: myGitRepo
-    type: GitRepo
+    type: GitHub
     configuration:
       # SCM integration where the repository is located
       gitProvider: {{ .Values.gitProvider }} # this will be replaced from values.yml
