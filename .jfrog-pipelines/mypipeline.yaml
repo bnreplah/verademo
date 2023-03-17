@@ -1,87 +1,91 @@
-template: true   # required for local templates
-valuesFilePath: ./values.yml
- 
-resources:
-  - name: myGitRepo
-    type: GitHub
+name: Verademo_hello_world
+steps:
+  - name: first
+    type: Bash
+    execution:
+      onStart:
+        - >-
+          echo "onStart can be used to do some setup or initialization of your
+          dependencies to prepare for the execution."
+      onExecute:
+        - >-
+          echo "onExecute is the main section where you would issue your
+          build/test commands"
+        - jfrog --version
+      onSuccess:
+        - >-
+          echo "onSuccess executes if the onStart or onExecute sections
+          completed without errors"
+      onFailure:
+        - >-
+          echo "onFailure executes if either onStart or onExecute end in failure
+          or error."
+      onComplete:
+        - echo "onComplete executes after onSuccess or onFailure"
+  - name: variable_selection
+    type: Bash
     configuration:
-      # SCM integration where the repository is located
-      gitProvider: {{ .Values.gitProvider }} # this will be replaced from values.yml
-      # Repository path, including org name/repo name
-      path: {{ .Values.path }} # this will be replaced from values.yml
-      branches:
-        # Specifies which branches will trigger dependent steps
-        include: master
- 
-  - name: thisPropertyBag
-    type: PropertyBag
+      inputSteps:
+        - name: first
+      environmentVariables:
+        forceFail:
+          default: 'false'
+          description: set to 'true' to force the step to fail.
+          values:
+            - 'false'
+            - 'true'
+    execution:
+      onStart:
+        - 'if [ ${forceFail} == "true" ]; then exit 1; fi'
+      onExecute:
+        - echo "This step will succeed"
+      onFailure:
+        - echo "step has failed."
+      onSuccess:
+        - echo "step has succeeded."
+      onComplete:
+        - >-
+          echo "onComplete executes regardless of success or failure. forceFail
+          is ${forceFail}"
+  - name: add_run_variable
+    type: Bash
     configuration:
-      commitSha: 1
-      runID: 1
- 
-pipelines:
-  - name: my_first_pipeline
-    steps:
-      - name: p1_s1
-        type: Bash
-        configuration:
-          inputResources:
-            # Sets up step to be triggered when there are commit events to myFirstRepo
-            - name: myGitRepo
-        execution:
-          onExecute:
-            # Data from input resources is available as env variables in the step
-            - echo $res_myFirstRepo_commitSha
-            # The next two commands add variables to run state, which is available to all downstream steps in this run
-            # Run state documentation: https://www.jfrog.com/confluence/display/JFROG/Creating+Stateful+Pipelines#CreatingStatefulPipelines-RunState
-            - add_run_variables current_runid=$run_id
-            - add_run_variables commitSha=$res_myFirstRepo_commitSha
-            # This variable is written to pipeline state in p1_s3.
-            # So this will be empty during first run and will be set to prior run number in subsequent runs
-            # Pipeline state documentation: https://www.jfrog.com/confluence/display/JFROG/Creating+Stateful+Pipelines#CreatingStatefulPipelines-PipelineState
-            - echo "Previous run ID is $prev_runid"
-            - echo test
-            - java --version
-            - curl --version
-          onStart:
-            - update_run_description "Pipeline of pipelines. my_first_pipeline triggers my_second_pipeline."
- 
-      - name: p1_s2
-        type: Bash
-        configuration:
-          inputSteps:
-            - name: p1_s1
-        execution:
-          onExecute:
-            # Demonstrates the availability of an env variable written to run state during p1_s1
-            - echo $current_runid
- 
-      - name: p1_s3
-        type: Bash
-        configuration:
-          inputSteps:
-            - name: p1_s2
-          outputResources:
-            - name: thisPropertyBag
-        execution:
-          onExecute:
-            - echo $current_runid
-            # Writes current run number to pipeline state
-            - add_pipeline_variables prev_runid=$run_id
-            # Uses an utility function to update the output resource with the commitSha that triggered this run
-            # Dependent pipelines can be configured to trigger when this resource is updated
-            # Utility functions documentation: https://www.jfrog.com/confluence/display/JFROG/Pipelines+Utility+Functions
-            - write_output thisPropertyBag commitSha=$commitSha runID=$current_runid
-            - echo part 2
-  - name: my_second_pipeline
-    steps:
-      - name: p2_s1
-        type: Bash
-        configuration:
-          inputResources:
-            # Sets up step to be triggered when thisPropertyBag is updated
-            - name: thisPropertyBag
-        execution:
-          onExecute:
-            # Retrieves the commitSha from input resource
-            - echo "CommitSha is $res_thisPropertyBag_commitSha"
+      inputSteps:
+        - name: first
+    execution:
+      onStart:
+        - echo "This step will save a value to a run variable."
+      onExecute:
+        - >-
+          add_run_variables step_info="runNumber $run_number, step_name
+          $step_name, pipeline_name $pipeline_name"
+  - name: write_to_resource
+    type: Bash
+    configuration:
+      inputSteps:
+        - name: add_run_variable
+        - name: variable_selection
+      outputResources:
+        - name: Verademo_bag
+    execution:
+      onStart:
+        - echo "Printing the run variable 'step_info' from previous step"
+        - 'echo "${step_info}"'
+      onExecute:
+        - echo "Updating resource Verademo_bag with new key/value pairs"
+        - write_output Verademo_bag "timestamp=$(date +%s)"
+        - >-
+          write_output Verademo_bag
+          "releaseVersion=${pipeline_name}.${run_number}"
+        - 'write_output Verademo_bag "stepInfo=${step_info}"'
+  - name: read_from_resource
+    type: Bash
+    configuration:
+      inputResources:
+        - name: Verademo_bag
+    execution:
+      onExecute:
+        - echo "printing resource details"
+        - 'echo "Release Version is -- ${res_Verademo_bag_releaseVersion}"'
+        - 'echo "Release timestamp is -- ${res_Verademo_bag_timestamp}"'
+        - 'echo "Step Info is -- ${res_Verademo_bag_stepInfo}"'
