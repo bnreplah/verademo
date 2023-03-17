@@ -31,7 +31,7 @@ pipelines:
             - name:          {{ .Values.artifactoryIntegration }} #<Artifactory integration>  # required
           inputResources:
             - name:         mvn_repo #<GitRepo resource>         # required
-            - name:         <FileSpec resource>        # optional
+            #- name:         <FileSpec resource>        # optional
           #outputResources:
           #  - name:         <BuildInfo resource>       # if autoPublishBuildInfo is true
  
@@ -43,3 +43,4 @@ pipelines:
           onFailure:
             - echo "uh oh, something went wrong"
           onComplete:                      
+            - echo "done."
