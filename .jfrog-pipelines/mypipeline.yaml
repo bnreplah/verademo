@@ -5,21 +5,18 @@ steps:
     execution:
       onStart:
         - >-
-          echo "onStart can be used to do some setup or initialization of your
-          dependencies to prepare for the execution."
+          echo "onStart can be used to do some setup or initialization of your dependencies to prepare for the execution."
       onExecute:
         - >-
-          echo "onExecute is the main section where you would issue your
-          build/test commands"
+          echo "onExecute is the main section where you would issue your build/test commands"
         - jfrog --version
+        - 
       onSuccess:
         - >-
-          echo "onSuccess executes if the onStart or onExecute sections
-          completed without errors"
+          echo "onSuccess executes if the onStart or onExecute sections completed without errors"
       onFailure:
         - >-
-          echo "onFailure executes if either onStart or onExecute end in failure
-          or error."
+          echo "onFailure executes if either onStart or onExecute end in failure or error."
       onComplete:
         - echo "onComplete executes after onSuccess or onFailure"
   - name: variable_selection
@@ -57,8 +54,7 @@ steps:
         - echo "This step will save a value to a run variable."
       onExecute:
         - >-
-          add_run_variables step_info="runNumber $run_number, step_name
-          $step_name, pipeline_name $pipeline_name"
+          add_run_variables step_info="runNumber $run_number, step_name $step_name, pipeline_name $pipeline_name"
   - name: write_to_resource
     type: Bash
     configuration:
