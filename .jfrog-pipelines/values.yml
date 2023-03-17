@@ -1,2 +1,6 @@
 gitProvider: GitHub       # replace with your GitRepo integration name
-path: bnreplah/verademo     # replace jfrog with your username or org name
+gitIntegration: GitHub
+path: bnreplah/verademo  
+gitRepositoryPath: bnreplah/verademo     # replace jfrog with your username or org name
+artifactoryIntegration: 
+
