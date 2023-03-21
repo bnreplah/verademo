@@ -100,7 +100,7 @@ jobs:
             
             
       - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v2.2.4
+        uses: actions/upload-artifact@v3.1.1
         with:
             # Artifact name
             name: verademo.war
@@ -180,7 +180,7 @@ jobs:
         - name: Veracode scan results to GitHub issues Action
           # You may pin to the exact commit or the version.
           # uses: veracode/veracode-flaws-to-issues@e03c95a2d9ce730870fe160ff77bbce3b7f0e32d
-          uses: veracode/veracode-flaws-to-issues@v1.0.0
+          uses: veracode/veracode-flaws-to-issues@v2.1.0
           with:
               # Scan results file
               scan-results-json: filtered_results.json # default is filtered_results.json
@@ -188,6 +188,7 @@ jobs:
               github-token: ${{ secrets.GH_TOKEN }} 
               # Delay (in seconds) between entering Issues into GitHub (due to rate limiting)
               #wait-time: # optional, default is 2
+              fail_build: false # optional
    
   results_to_Issues:
         needs: build
@@ -201,7 +202,7 @@ jobs:
           - name: Veracode Dependency Scanning
             # You may pin to the exact commit or the version.
             # uses: veracode/veracode-sca@d8ce4a08eebf1a6c5e7759c1dc53c1172a3e7e64
-            uses: veracode/veracode-sca@v1.09
+            uses: veracode/veracode-sca@v2.16
             with:
               # Authorization token to query and create issues
               github_token: ${{ secrets.GH_TOKEN }}
