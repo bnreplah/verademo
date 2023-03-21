@@ -168,9 +168,9 @@ jobs:
           with:
             pipeline-results-json: results.json
             output-results-sarif: veracode-results.sarif
-            source-base-path-1: "^com/veracode:src/main/java/com/veracode"
-            source-base-path-2: "^WEB-INF:src/main/webapp/WEB-INF"
-            finding-rule-level: "3:1:0"
+            # source-base-path-1: "^com/veracode:src/main/java/com/veracode"
+            # source-base-path-2: "^WEB-INF:src/main/webapp/WEB-INF"
+            finding-rule-level: "4:3:0"
 
         - name: upload sarif file to repository
           uses: github/codeql-action/upload-sarif@v2
