@@ -132,6 +132,10 @@ jobs:
       needs: build
       runs-on: ubuntu-latest
       name: import pipeline results to sarif
+      permissions:
+        contents: read
+        packages: write
+      
       steps:
         - name: Download a Build Artifact
           uses: actions/download-artifact@v3.0.2
@@ -189,6 +193,10 @@ jobs:
         needs: build
         runs-on: ubuntu-latest
         name: dependency scanning and issue import
+        permissions:
+          contents: read
+          packages: write
+      
         steps:
           - name: Veracode Dependency Scanning
             # You may pin to the exact commit or the version.
