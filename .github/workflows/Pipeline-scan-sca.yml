@@ -217,7 +217,7 @@ jobs:
               # The maximum allowed cvss in found vulnerabilities to pass the step
               #fail-on-cvss: # optional, default is 10
               # An attribute to instruct the action to create an issue from found vulnerability or just simple text output
-              create-issues: true # optional, default is false
+              #create-issues: true # optional, default is false
               # A path within the repository where the build definition starts
               path: app/ # optional, default is .
               # Run the SRCCLR in debug mode
@@ -229,5 +229,6 @@ jobs:
               # Run the SRCCLR with the `--recursive` option
               recursive: true # optional, default is false
 
-          
+          - run: |
+              ls -la
 
