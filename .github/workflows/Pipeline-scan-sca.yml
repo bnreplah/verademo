@@ -172,10 +172,7 @@ jobs:
             # source-base-path-2: "^WEB-INF:src/main/webapp/WEB-INF"
             finding-rule-level: "4:3:0"
 
-        - name: upload sarif file to repository
-          uses: github/codeql-action/upload-sarif@v2
-          with: # Path to SARIF file relative to the root of the repository
-            sarif_file: veracode-results.sarif
+ 
    
         - name: Veracode scan results to GitHub issues Action
           # You may pin to the exact commit or the version.
@@ -217,9 +214,9 @@ jobs:
               # The maximum allowed cvss in found vulnerabilities to pass the step
               #fail-on-cvss: # optional, default is 10
               # An attribute to instruct the action to create an issue from found vulnerability or just simple text output
-              #create-issues: true # optional, default is false
+              create-issues: true # optional, default is false
               # A path within the repository where the build definition starts
-              path: app/ # optional, default is .
+              path: ./app/ # optional, default is .
               # Run the SRCCLR in debug mode
               debug: true # optional, default is false
               # Run the SRCCLR with the `--skip-collectors` options
@@ -227,7 +224,7 @@ jobs:
               # Run the SRCCLR with the `--allow-dirty` option
               allow-dirty: true # optional, default is false
               # Run the SRCCLR with the `--recursive` option
-              recursive: true # optional, default is false
+              recursive: false # optional, default is false
 
           - run: |
               ls -la
