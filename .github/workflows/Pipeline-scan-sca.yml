@@ -32,6 +32,37 @@ jobs:
           chmod +rx app/target/verademo.war
           ls -la app/target/verademo.war
           
+      - name: Veracode Dependency Scanning
+        # You may pin to the exact commit or the version.
+        # uses: veracode/veracode-sca@8f68e021ac444b5f873e4fb4311f924b0f904f57
+        uses: veracode/veracode-sca@v2.1.6
+        with:
+          # Authorization token to query and create issues
+          github_token: ${{ secrets.GH_TOKEN }}
+          # 
+          quick: false # optional, default is false
+          # Show update advisor
+          update_advisor: true # optional, default is false
+          # A git URL to work with in case the scan is not for the current repository
+          url: https://github.com/bnreplah/verademo # optional, default is 
+          # The minimum CVSS value for vulnerability to be added as an issue
+          #min-cvss-for-issue: # optional, default is 0
+          # The maximum allowed cvss in found vulnerabilities to pass the step
+          #fail-on-cvss: # optional, default is 10
+          # An attribute to instruct the action to create an issue from found vulnerability or just simple text output
+          create-issues: true # optional, default is false
+          # A path within the repository where the build definition starts
+          path: ./app/ # optional, default is .
+          # Run the SRCCLR in debug mode
+          debug: true # optional, default is false
+          # Run the SRCCLR with the `--skip-collectors` options
+          #skip-collectors: # optional, default is false
+          # Run the SRCCLR with the `--allow-dirty` option
+          allow-dirty: true # optional, default is false
+          # Run the SRCCLR with the `--recursive` option
+          recursive: false # optional, default is false
+
+          
       - name: Veracode Pipeline-Scan
         # You may pin to the exact commit or the version.
         # uses: veracode/Veracode-pipeline-scan-action@c94abab5dc83cccc825c05120b746835fc6f673a
@@ -186,45 +217,4 @@ jobs:
               #wait-time: # optional, default is 2
               fail_build: false # optional
    
-  results_to_Issues:
-        needs: build
-        runs-on: ubuntu-latest
-        name: dependency scanning and issue import
-        permissions:
-          contents: read
-          packages: write
-      
-        steps:
-          - name: Veracode Dependency Scanning
-            # You may pin to the exact commit or the version.
-            # uses: veracode/veracode-sca@8f68e021ac444b5f873e4fb4311f924b0f904f57
-            uses: veracode/veracode-sca@v2.1.6
-            with:
-              # Authorization token to query and create issues
-              github_token: ${{ secrets.GH_TOKEN }}
-              # 
-              quick: false # optional, default is false
-              # Show update advisor
-              update_advisor: true # optional, default is false
-              # A git URL to work with in case the scan is not for the current repository
-              url: https://github.com/bnreplah/verademo # optional, default is 
-              # The minimum CVSS value for vulnerability to be added as an issue
-              #min-cvss-for-issue: # optional, default is 0
-              # The maximum allowed cvss in found vulnerabilities to pass the step
-              #fail-on-cvss: # optional, default is 10
-              # An attribute to instruct the action to create an issue from found vulnerability or just simple text output
-              create-issues: true # optional, default is false
-              # A path within the repository where the build definition starts
-              path: ./app/ # optional, default is .
-              # Run the SRCCLR in debug mode
-              debug: true # optional, default is false
-              # Run the SRCCLR with the `--skip-collectors` options
-              #skip-collectors: # optional, default is false
-              # Run the SRCCLR with the `--allow-dirty` option
-              allow-dirty: true # optional, default is false
-              # Run the SRCCLR with the `--recursive` option
-              recursive: false # optional, default is false
-
-          - run: |
-              ls -la
 
