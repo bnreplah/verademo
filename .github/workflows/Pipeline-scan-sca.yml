@@ -128,6 +128,7 @@ jobs:
             path: results.json
             # The desired behavior if no files are found using the provided path.
     
+
   results_to_sarif:
       needs: build
       runs-on: ubuntu-latest
@@ -170,10 +171,8 @@ jobs:
             output-results-sarif: veracode-results.sarif
             # source-base-path-1: "^com/veracode:src/main/java/com/veracode"
             # source-base-path-2: "^WEB-INF:src/main/webapp/WEB-INF"
-            finding-rule-level: "4:3:0"
+            #finding-rule-level: "4:3:0"
 
- 
-   
         - name: Veracode scan results to GitHub issues Action
           # You may pin to the exact commit or the version.
           # uses: veracode/veracode-flaws-to-issues@e03c95a2d9ce730870fe160ff77bbce3b7f0e32d
@@ -198,8 +197,8 @@ jobs:
         steps:
           - name: Veracode Dependency Scanning
             # You may pin to the exact commit or the version.
-            # uses: veracode/veracode-sca@d8ce4a08eebf1a6c5e7759c1dc53c1172a3e7e64
-            uses: veracode/veracode-sca@v2.16
+            # uses: veracode/veracode-sca@8f68e021ac444b5f873e4fb4311f924b0f904f57
+            uses: veracode/veracode-sca@v2.1.6
             with:
               # Authorization token to query and create issues
               github_token: ${{ secrets.GH_TOKEN }}
