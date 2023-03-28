@@ -210,7 +210,7 @@ jobs:
           uses: veracode/veracode-flaws-to-issues@v2.1.0
           with:
               # Scan results file
-              scan-results-json: filtered_results.json # default is filtered_results.json
+              scan-results-json: results.json # default is filtered_results.json
               # GitHub token to access the repo
               github-token: ${{ secrets.GH_TOKEN }} 
               # Delay (in seconds) between entering Issues into GitHub (due to rate limiting)
