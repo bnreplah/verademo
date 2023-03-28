@@ -193,16 +193,6 @@ jobs:
             ls -la verademo.war
             ls -la results.json
             
-            
-        - name: Convert pipeline scan output to SARIF format
-          id: convert
-          uses: Veracode/veracode-pipeline-scan-results-to-sarif@v1.0.5
-          with:
-            pipeline-results-json: results.json
-            output-results-sarif: veracode-results.sarif
-            # source-base-path-1: "^com/veracode:src/main/java/com/veracode"
-            # source-base-path-2: "^WEB-INF:src/main/webapp/WEB-INF"
-            #finding-rule-level: "4:3:0"
 
         - name: Veracode scan results to GitHub issues Action
           # You may pin to the exact commit or the version.
