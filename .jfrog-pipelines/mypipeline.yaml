@@ -13,43 +13,10 @@ resources:
 pipelines:
 - name: Verademo_hello_world
   steps:
-    - name: first
-      type: Bash
-      execution:
-        onStart:
-          - echo "onStart can be used to do some setup or initialization of your dependencies to prepare for the execution."
-          - echo "Downloading the latest version of the Veracode Java API Wrapper"
-          #- git clone https://github.com/bnreplah/verademo.git
-          #- WRAPPER_VERSION=$( `curl https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/maven-metadata.xml | grep latest |  cut -d '>' -f 2 | cut -d '<' -f 1` )
-          #- echo '[INFO] ------------------------------------------------------------------------'
-          #- echo '[INFO] DOWNLOADING VERACODE JAVA WRAPPER'
-          #- | 
-          #  if [ `wget https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/$WRAPPER_VERSION/vosp-api-wrappers-java-$WRAPPER_VERSION.jar -O VeracodeJavaAPI.jar` ]; then
-          #        chmod 755 VeracodeJavaAPI.jar
-          #        echo '[INFO] SUCCESSFULLY DOWNLOADED WRAPPER'
-          #  else
-          #        echo '[ERROR] DOWNLOAD FAILED'
-          #        exit 1
-          #  fi
-          #- echo '[INFO] ------------------------------------------------------------------------'
-          #- echo '[INFO] VERACODE UPLOAD AND SCAN'
-        onExecute:
-          - >-
-            echo "onExecute is the main section where you would issue your build/test commands"
-        onSuccess:
-          - >-
-            echo "onSuccess executes if the onStart or onExecute sections completed without errors"
-            #cd ./verademo/app
-        onFailure:
-          - >-
-            echo "onFailure executes if either onStart or onExecute end in failure or error."
-        onComplete:
-          - echo "onComplete executes after onSuccess or onFailure"
+    
     - name: MvnBuildStep
       type: MvnBuild
       configuration:
-          inputSteps:
-            - name: first
           #inherits all the tags from bash
           mvnCommand: "clean package"
           sourceLocation: "app/"
@@ -62,20 +29,9 @@ pipelines:
             - name:  mvnBuildInfo
           autoPublishBuildInfo: true
           
-          #configFileLocation: "./verademo/app/pom.xml"
-          # execution testing
       execution:
         onSuccess:
           - printenv int_VeracodeAPICredentialsBen_VERACODE_API_KEY_ID
-          - echo " Success "
-          - ls -la 
-          - ls -la
-          - ls -la output
-          - ls -la dependencyState/resources/mvnRepo/*
-          - ls -la workspace/artifacts
-          - ls -la workspace/upload
-          - ls -la workspace/run_state
-          - pwd
           - WRAPPER_VERSION=`curl https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/maven-metadata.xml | grep latest |  cut -d '>' -f 2 | cut -d '<' -f 1`
           - echo '[INFO] ------------------------------------------------------------------------'
           - echo '[INFO] DOWNLOADING VERACODE JAVA WRAPPER'
@@ -83,40 +39,10 @@ pipelines:
             wget https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/$WRAPPER_VERSION/vosp-api-wrappers-java-$WRAPPER_VERSION.jar -O VeracodeJavaAPI.jar
             chmod 755 VeracodeJavaAPI.jar
           - ls -la
-          - java -jar VeracodeJavaAPI.jar -vid $( printenv int_VeracodeAPICredentialsBen_VERACODE_API_KEY_ID ) -vkey $( printenv int_VeracodeAPICredentialsBen_VERACODE_API_KEY_SECRET ) -action uploadandscan -appname "VeraDemo" -filepath dependencyState/resources/mvnRepo/app/target/verademo.war -version "Jfrog-test-001" -createprofile false
+          - java -jar VeracodeJavaAPI.jar -vid $( printenv int_VeracodeAPICredentialsBen_VERACODE_API_KEY_ID ) -vkey $( printenv int_VeracodeAPICredentialsBen_VERACODE_API_KEY_SECRET ) -action uploadandscan -appname "VeraDemo" -filepath dependencyState/resources/mvnRepo/app/target/verademo.war -version "jfrog-test-"${run_number} -deleteincompletescan 2 -createprofile false
         onFailure:
-          - echo "failed"
-          # attempting to upload
-#    - name: publish_build
-#      type: PublishBuildInfo
-#      configuration:
-#        forceXrayScan: false
-#        inputSteps:
-#          - name: MvnBuildStep
-#        outputResources:
-#          - name: mvnBuildInfo
-
-
-#    - name: Upload_to_Artifactory
-#      type: ArtifactoryUpload
-#      configuration:
-#        inputSteps:
-#          - name: MvnBuildStep
-#        serverName: verajuan # Replace with your Artifactory instance name
-#        repository: mvnRepo         # Replace with the Artifactory repository where you want to upload the .war file
-#        specSource: "app/target/*.war"          # The path to the .war file produced by the Maven build
-
-#    - name: Download_from_Artifactory
-#      type: ArtifactoryDownload
-#      configuration:
-#        inputSteps:
-#          - name: Upload_to_Artifactory
-#        serverName: verajuan # Replace with your Artifactory instance name
-#        repository: mvnRepo          # Replace with the Artifactory repository where the .war file was uploaded
-#        specSource: "app/target/*.war"        # The path to the .war file in Artifactory
-#        target: "downloaded/*.war"  
-
-      # checking artifact state in seperate step
+          - echo "failed the maven build"
+         
     - name: checkArtifact
       type: Bash
       configuration:
