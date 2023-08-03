@@ -4,7 +4,7 @@ resources:
     type: GitRepo
     configuration:
       path: "bnreplah/verademo" # {{ .Values.repoPath }}
-      gitProvider: "GitHub" # {{ .Values.gitProvider }}
+      gitProvider: "github" # {{ .Values.gitProvider }}
 
 pipelines:
 - name: Verademo_hello_world
