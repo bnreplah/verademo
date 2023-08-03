@@ -64,11 +64,9 @@ pipelines:
       execution: 
         onStart:
           - pwd
-          - ls -la
-          - ls -la app/
+          - ls -la ../../MvnBuildStep/
         onExecute:
-          - >-
-            ls -la app/
+          - ls -la {{ .resources.mvnRepo }}
         onSuccess:
           - >-
             echo "onSuccess executes if the onStart or onExecute sections completed without errors"
