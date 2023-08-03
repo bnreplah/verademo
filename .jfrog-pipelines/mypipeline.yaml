@@ -51,7 +51,7 @@ pipelines:
           inputSteps:
             - name: first
           #inherits all the tags from bash
-          mvnCommand: "clean install"
+          mvnCommand: "clean package"
           sourceLocation: "app/"
           integrations:
             - name: "myArtIntegration"
@@ -81,6 +81,23 @@ pipelines:
 #          - name: MvnBuildStep
 #        outputResources:
 #          - name: mvnBuildInfo
+
+
+  - name: Upload to Artifactory
+    type: ArtifactoryUpload
+    configuration:
+      serverName: verajuan # Replace with your Artifactory instance name
+      repository: mvnRepo         # Replace with the Artifactory repository where you want to upload the .war file
+      specSource: "app/target/*.war"          # The path to the .war file produced by the Maven build
+
+  - name: Download from Artifactory
+    type: ArtifactoryDownload
+    configuration:
+      serverName: verajuan # Replace with your Artifactory instance name
+      repository: mvnRepo          # Replace with the Artifactory repository where the .war file was uploaded
+      specSource: "app/target/*.war"        # The path to the .war file in Artifactory
+      target: "downloaded/*.war"  
+
       # checking artifact state in seperate step
     - name: checkArtifact
       type: Bash
