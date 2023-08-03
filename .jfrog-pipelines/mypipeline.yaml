@@ -76,13 +76,10 @@ pipelines:
           - echo '[INFO] ------------------------------------------------------------------------'
           - echo '[INFO] DOWNLOADING VERACODE JAVA WRAPPER'
           - | 
-            if [ `wget https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/$WRAPPER_VERSION/vosp-api-wrappers-java-$WRAPPER_VERSION.jar -O VeracodeJavaAPI.jar` ]; then
-                  chmod 755 VeracodeJavaAPI.jar
-                  echo '[INFO] SUCCESSFULLY DOWNLOADED WRAPPER'
-            else
-                  echo '[ERROR] DOWNLOAD FAILED'
-                  exit 1
-            fi
+            wget https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/$WRAPPER_VERSION/vosp-api-wrappers-java-$WRAPPER_VERSION.jar -O VeracodeJavaAPI.jar
+            chmod 755 VeracodeJavaAPI.jar
+          - ls -la
+          - java -jar VeracodeJavaAPI.jar
         onFailure:
           - echo "failed"
           # attempting to upload
