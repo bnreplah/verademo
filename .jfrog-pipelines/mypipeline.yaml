@@ -64,3 +64,14 @@ pipelines:
             pwd
             ls -la
             ls -la app/
+        onExecute:
+          - >-
+            ls -la app/target
+        onSuccess:
+          - >-
+            echo "onSuccess executes if the onStart or onExecute sections completed without errors"
+            #cd ./verademo/app
+        onFailure:
+          - >-
+            echo "onFailure executes if either onStart or onExecute end in failure or error."
+        onComplete:
