@@ -1,5 +1,5 @@
 valuesFilePath: ./values.yml
-#resources:
+resources:
   - name: mvnRepo
     type: GitRepo
     configuration:
