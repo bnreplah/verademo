@@ -16,18 +16,18 @@ pipelines:
         onStart:
           - echo "onStart can be used to do some setup or initialization of your dependencies to prepare for the execution."
           - echo "Downloading the latest version of the Veracode Java API Wrapper"
-          - git clone https://github.com/bnreplah/verademo.git
-          - WRAPPER_VERSION=$( `curl https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/maven-metadata.xml | grep latest |  cut -d '>' -f 2 | cut -d '<' -f 1` )
+          #- git clone https://github.com/bnreplah/verademo.git
+          #- WRAPPER_VERSION=$( `curl https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/maven-metadata.xml | grep latest |  cut -d '>' -f 2 | cut -d '<' -f 1` )
           #- echo '[INFO] ------------------------------------------------------------------------'
           #- echo '[INFO] DOWNLOADING VERACODE JAVA WRAPPER'
-          - | 
-            if [ `wget https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/$WRAPPER_VERSION/vosp-api-wrappers-java-$WRAPPER_VERSION.jar -O VeracodeJavaAPI.jar` ]; then
-                  chmod 755 VeracodeJavaAPI.jar
-                  echo '[INFO] SUCCESSFULLY DOWNLOADED WRAPPER'
-            else
-                  echo '[ERROR] DOWNLOAD FAILED'
-                  exit 1
-            fi
+          #- | 
+          #  if [ `wget https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/$WRAPPER_VERSION/vosp-api-wrappers-java-$WRAPPER_VERSION.jar -O VeracodeJavaAPI.jar` ]; then
+          #        chmod 755 VeracodeJavaAPI.jar
+          #        echo '[INFO] SUCCESSFULLY DOWNLOADED WRAPPER'
+          #  else
+          #        echo '[ERROR] DOWNLOAD FAILED'
+          #        exit 1
+          #  fi
           #- echo '[INFO] ------------------------------------------------------------------------'
           #- echo '[INFO] VERACODE UPLOAD AND SCAN'
         onExecute:
@@ -36,7 +36,7 @@ pipelines:
         onSuccess:
           - >-
             echo "onSuccess executes if the onStart or onExecute sections completed without errors"
-            cd ./verademo/app
+            #cd ./verademo/app
         onFailure:
           - >-
             echo "onFailure executes if either onStart or onExecute end in failure or error."
