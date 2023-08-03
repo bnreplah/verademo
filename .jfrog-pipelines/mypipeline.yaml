@@ -63,10 +63,9 @@ pipelines:
           - name: MvnBuildStep
       execution: 
         onStart:
-          - >-
-            pwd
-            ls -la
-            ls -la app/
+          - pwd
+          - ls -la
+          - ls -la app/
         onExecute:
           - >-
             ls -la app/
