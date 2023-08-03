@@ -1,10 +1,10 @@
 valuesFilePath: ./values.yml
-resources:
-  - name: mvn_repo
-    type: GitRepo
-    configuration:
-      path: "bnreplah/verademo" # {{ .Values.repoPath }}
-      gitProvider: "GitHub" # {{ .Values.gitProvider }}
+#resources:
+  #- name: mvn_repo
+  #  type: GitRepo
+  #  configuration:
+  #    path: "bnreplah/verademo" # {{ .Values.repoPath }}
+  #    gitProvider: "GitHub" # {{ .Values.gitProvider }}
 
 pipelines:
 - name: Verademo_hello_world
@@ -16,6 +16,7 @@ pipelines:
           - echo "onStart can be used to do some setup or initialization of your dependencies to prepare for the execution.
           - echo "Downloading the latest version of the Veracode Java API Wrapper"
           - mvn --version
+          - git clone https://github.com/bnreplah/verademo.git
           #- WRAPPER_VERSION=`curl https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/maven-metadata.xml | grep latest |  cut -d '>' -f 2 | cut -d '<' -f 1`
           #- echo '[INFO] ------------------------------------------------------------------------'
           #- echo '[INFO] DOWNLOADING VERACODE JAVA WRAPPER'
