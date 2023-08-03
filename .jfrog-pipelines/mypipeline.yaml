@@ -58,7 +58,7 @@ pipelines:
           inputResources:
             - name: mvnRepo
           outputResources:
-            - name:  
+            - name:  mvnBuildInfo
           #configFileLocation: "./verademo/app/pom.xml"
           # execution testing
       execution:
