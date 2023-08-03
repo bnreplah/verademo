@@ -69,7 +69,7 @@ pipelines:
             ls -la app/
         onExecute:
           - >-
-            ls -la app/target
+            ls -la app/
         onSuccess:
           - >-
             echo "onSuccess executes if the onStart or onExecute sections completed without errors"
