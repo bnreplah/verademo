@@ -75,3 +75,5 @@ pipelines:
           - >-
             echo "onFailure executes if either onStart or onExecute end in failure or error."
         onComplete:
+          - >-
+            echo "completed"
