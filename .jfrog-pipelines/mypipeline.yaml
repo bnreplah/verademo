@@ -77,34 +77,4 @@ pipelines:
         onExecute:
           - >-
             add_run_variables step_info="runNumber $run_number, step_name $step_name, pipeline_name $pipeline_name"
-    - name: write_to_resource
-      type: Bash
-      configuration:
-        inputSteps:
-          - name: add_run_variable
-          - name: variable_selection
-        outputResources:
-          - name: Verademo_bag
-      execution:
-        onStart:
-          - echo "Printing the run variable 'step_info' from previous step"
-          - 'echo "${step_info}"'
-        onExecute:
-          - echo "Updating resource Verademo_bag with new key/value pairs"
-          - write_output Verademo_bag "timestamp=$(date +%s)"
-          - >-
-            write_output Verademo_bag
-            "releaseVersion=${pipeline_name}.${run_number}"
-          - 'write_output Verademo_bag "stepInfo=${step_info}"'
-          
-    - name: read_from_resource
-      type: Bash
-      configuration:
-        inputResources:
-          - name: Verademo_bag
-      execution:
-        onExecute:
-          - echo "printing resource details"
-          - 'echo "Release Version is -- ${res_Verademo_bag_releaseVersion}"'
-          - 'echo "Release timestamp is -- ${res_Verademo_bag_timestamp}"'
-          - 'echo "Step Info is -- ${res_Verademo_bag_stepInfo}"'
+    
