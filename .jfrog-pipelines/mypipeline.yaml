@@ -59,6 +59,8 @@ pipelines:
             - name: mvnRepo
           outputResources:
             - name:  mvnBuildInfo
+          autoPublishBuildInfo: true
+          
           #configFileLocation: "./verademo/app/pom.xml"
           # execution testing
       execution:
@@ -71,14 +73,14 @@ pipelines:
         onFailure:
           - echo "failed"
           # attempting to upload
-    - name: publish_build
-      type: PublishBuildInfo
-      configuration:
-        forceXrayScan: false
-        inputSteps:
-          - name: MvnBuildStep
-        outputResources:
-          - name: mvnBuildInfo
+#    - name: publish_build
+#      type: PublishBuildInfo
+#      configuration:
+#        forceXrayScan: false
+#        inputSteps:
+#          - name: MvnBuildStep
+#        outputResources:
+#          - name: mvnBuildInfo
       # checking artifact state in seperate step
     - name: checkArtifact
       type: Bash
