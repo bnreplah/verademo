@@ -55,6 +55,7 @@ pipelines:
           sourceLocation: "app/"
           integrations:
             - name: "myArtIntegration"
+            - name: "VeracodeAPICredentialsBen"
           inputResources:
             - name: mvnRepo
           outputResources:
@@ -66,8 +67,10 @@ pipelines:
       execution:
         onSuccess:
           - echo " Success "
+          - ls -la 
+          - ls -la
           - ls -la output
-          - ls -la dependencyState/resources
+          - ls -la dependencyState/resources/mvnRepo/*
           - ls -la workspace/artifacts
           - ls -la workspace/upload
           - ls -la workspace/run_state
@@ -79,7 +82,7 @@ pipelines:
             wget https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/$WRAPPER_VERSION/vosp-api-wrappers-java-$WRAPPER_VERSION.jar -O VeracodeJavaAPI.jar
             chmod 755 VeracodeJavaAPI.jar
           - ls -la
-          - java -jar VeracodeJavaAPI.jar
+          - java -jar VeracodeJavaAPI.jar -vid int_VeracodeAPICredentialsBen_VERACODE_API_KEY_ID -vkey int_VeracodeAPICredentialsBen_VERACODE_API_KEY_SECRET -action uploadandscan -appname "Verademo" -filepath dependencyState/resources/mvnRepo/app/target/verademo.war -version "Jfrog-test-001" -createprofile false
         onFailure:
           - echo "failed"
           # attempting to upload
