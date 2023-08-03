@@ -64,7 +64,6 @@ pipelines:
       execution: 
         onStart:
           - pwd
-          - ls -la ../../MvnBuildStep/
         onExecute:
           - ls -la {{ .resources.mvnRepo }}
         onSuccess:
