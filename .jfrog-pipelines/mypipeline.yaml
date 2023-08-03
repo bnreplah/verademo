@@ -83,16 +83,20 @@ pipelines:
 #          - name: mvnBuildInfo
 
 
-    - name: Upload to Artifactory
+    - name: Upload_to_Artifactory
       type: ArtifactoryUpload
       configuration:
+        inputSteps:
+          - name: MvnBuildStep
         serverName: verajuan # Replace with your Artifactory instance name
         repository: mvnRepo         # Replace with the Artifactory repository where you want to upload the .war file
         specSource: "app/target/*.war"          # The path to the .war file produced by the Maven build
 
-    - name: Download from Artifactory
+    - name: Download_from_Artifactory
       type: ArtifactoryDownload
       configuration:
+        inputSteps:
+          - name: Upload_to_Artifactory
         serverName: verajuan # Replace with your Artifactory instance name
         repository: mvnRepo          # Replace with the Artifactory repository where the .war file was uploaded
         specSource: "app/target/*.war"        # The path to the .war file in Artifactory
