@@ -83,24 +83,24 @@ pipelines:
 #          - name: mvnBuildInfo
 
 
-    - name: Upload_to_Artifactory
-      type: ArtifactoryUpload
-      configuration:
-        inputSteps:
-          - name: MvnBuildStep
-        serverName: verajuan # Replace with your Artifactory instance name
-        repository: mvnRepo         # Replace with the Artifactory repository where you want to upload the .war file
-        specSource: "app/target/*.war"          # The path to the .war file produced by the Maven build
+#    - name: Upload_to_Artifactory
+#      type: ArtifactoryUpload
+#      configuration:
+#        inputSteps:
+#          - name: MvnBuildStep
+#        serverName: verajuan # Replace with your Artifactory instance name
+#        repository: mvnRepo         # Replace with the Artifactory repository where you want to upload the .war file
+#        specSource: "app/target/*.war"          # The path to the .war file produced by the Maven build
 
-    - name: Download_from_Artifactory
-      type: ArtifactoryDownload
-      configuration:
-        inputSteps:
-          - name: Upload_to_Artifactory
-        serverName: verajuan # Replace with your Artifactory instance name
-        repository: mvnRepo          # Replace with the Artifactory repository where the .war file was uploaded
-        specSource: "app/target/*.war"        # The path to the .war file in Artifactory
-        target: "downloaded/*.war"  
+#    - name: Download_from_Artifactory
+#      type: ArtifactoryDownload
+#      configuration:
+#        inputSteps:
+#          - name: Upload_to_Artifactory
+#        serverName: verajuan # Replace with your Artifactory instance name
+#        repository: mvnRepo          # Replace with the Artifactory repository where the .war file was uploaded
+#        specSource: "app/target/*.war"        # The path to the .war file in Artifactory
+#        target: "downloaded/*.war"  
 
       # checking artifact state in seperate step
     - name: checkArtifact
