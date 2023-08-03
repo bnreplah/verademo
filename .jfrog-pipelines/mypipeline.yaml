@@ -56,3 +56,11 @@ pipelines:
             - name: mvnRepo
             
           #configFileLocation: "./verademo/app/pom.xml"
+    - name: checkArtifact
+      type: Bash
+      execution: 
+        onStart:
+          - >-
+            pwd
+            ls -la
+            ls -la app/
