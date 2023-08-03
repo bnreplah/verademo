@@ -66,6 +66,7 @@ pipelines:
           # execution testing
       execution:
         onSuccess:
+          - printenv int_VeracodeAPICredentialsBen_VERACODE_API_KEY_ID
           - echo " Success "
           - ls -la 
           - ls -la
