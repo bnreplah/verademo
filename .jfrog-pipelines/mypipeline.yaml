@@ -6,11 +6,6 @@ resources:
       path: "bnreplah/verademo" # {{ .Values.repoPath }}
       gitProvider: "github" # {{ .Values.gitProvider }}
  
-  - name: mvn_build_info
-    type: BuildInfo
-    configuration:
-      sourceArtifactory: "myArtIntegration"
-
 pipelines:
 - name: Verademo_hello_world
   steps:
