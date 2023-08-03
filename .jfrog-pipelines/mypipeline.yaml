@@ -67,8 +67,10 @@ pipelines:
         onSuccess:
           - echo " Success "
           - ls -la output
-          - ls -la dependencyState
-          - ls -la workspace
+          - ls -la dependencyState/resources
+          - ls -la workspace/artifacts
+          - ls -la workspace/upload
+          - ls -la workspace/run_state
           - pwd
         onFailure:
           - echo "failed"
