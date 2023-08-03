@@ -66,6 +66,7 @@ pipelines:
           - pwd
         onExecute:
           - ls -la {{ .resources.mvnRepo }}
+          - ls -la workspace
         onSuccess:
           - >-
             echo "onSuccess executes if the onStart or onExecute sections completed without errors"
