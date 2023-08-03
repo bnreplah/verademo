@@ -90,7 +90,9 @@ pipelines:
           - pwd
         onExecute:
           - ls -la {{ .resources.mvnRepo.output }}
-          - ls -la workspace
+          - ls -la workspace/upload
+          - ls -la workspace/cache
+          - ls -la workspace/download
           - ls -la dependencyState
         onSuccess:
           - >-
