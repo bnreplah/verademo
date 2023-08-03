@@ -42,7 +42,7 @@ pipelines:
         onComplete:
           - echo "onComplete executes after onSuccess or onFailure"
     - name: MvnBuildStep
-      type: mvn_build
+      type: MvnBuild
       configuration:
           #inherits all the tags from bash
           mvnCommand: "clean install"
