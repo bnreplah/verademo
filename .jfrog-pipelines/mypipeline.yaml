@@ -45,6 +45,8 @@ pipelines:
     - name: MvnBuildStep
       type: MvnBuild
       configuration:
+          inputSteps:
+            - name: first
           #inherits all the tags from bash
           mvnCommand: "clean install"
           integrations:
