@@ -6,7 +6,7 @@ resources:
       path: "bnreplah/verademo" # {{ .Values.repoPath }}
       gitProvider: "github" # {{ .Values.gitProvider }}
 
-  - name: mvn_build_info
+  - name: mvnBuildInfo
     type: BuildInfo
     configuration:
       sourceArtifactory: "myArtIntegration"
