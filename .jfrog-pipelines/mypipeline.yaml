@@ -13,21 +13,22 @@ pipelines:
       type: Bash
       execution:
         onStart:
-          - >-
-            echo "onStart can be used to do some setup or initialization of your dependencies to prepare for the execution.
-            echo "Downloading the latest version of the Veracode Java API Wrapper"
-            WRAPPER_VERSION=`curl https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/maven-metadata.xml | grep latest |  cut -d '>' -f 2 | cut -d '<' -f 1`
-            echo '[INFO] ------------------------------------------------------------------------'
-            echo '[INFO] DOWNLOADING VERACODE JAVA WRAPPER'
-            if `wget https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/$WRAPPER_VERSION/vosp-api-wrappers-java-$WRAPPER_VERSION.jar -O VeracodeJavaAPI.jar`; then
+          - echo "onStart can be used to do some setup or initialization of your dependencies to prepare for the execution.
+          - echo "Downloading the latest version of the Veracode Java API Wrapper"
+          - mvn --version
+          - WRAPPER_VERSION=`curl https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/maven-metadata.xml | grep latest |  cut -d '>' -f 2 | cut -d '<' -f 1`
+          - echo '[INFO] ------------------------------------------------------------------------'
+          - echo '[INFO] DOWNLOADING VERACODE JAVA WRAPPER'
+          - >- 
+            if [ `wget https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/$WRAPPER_VERSION/vosp-api-wrappers-java-$WRAPPER_VERSION.jar -O VeracodeJavaAPI.jar` ]; then
                   chmod 755 VeracodeJavaAPI.jar
                   echo '[INFO] SUCCESSFULLY DOWNLOADED WRAPPER'
             else
                   echo '[ERROR] DOWNLOAD FAILED'
                   exit 1
             fi
-            echo '[INFO] ------------------------------------------------------------------------'
-            echo '[INFO] VERACODE UPLOAD AND SCAN'
+          - echo '[INFO] ------------------------------------------------------------------------'
+          - echo '[INFO] VERACODE UPLOAD AND SCAN'
         onExecute:
           - >-
             echo "onExecute is the main section where you would issue your build/test commands"
@@ -41,40 +42,4 @@ pipelines:
             echo "onFailure executes if either onStart or onExecute end in failure or error."
         onComplete:
           - echo "onComplete executes after onSuccess or onFailure"
-    - name: variable_selection
-      type: Bash
-      configuration:
-        inputSteps:
-          - name: first
-        environmentVariables:
-          forceFail:
-            default: 'false'
-            description: set to 'true' to force the step to fail.
-            values:
-              - 'false'
-              - 'true'
-      execution:
-        onStart:
-          - 'if [ ${forceFail} == "true" ]; then exit 1; fi'
-        onExecute:
-          - echo "This step will succeed"
-        onFailure:
-          - echo "step has failed."
-        onSuccess:
-          - echo "step has succeeded."
-        onComplete:
-          - >-
-            echo "onComplete executes regardless of success or failure. forceFail
-            is ${forceFail}"
-    - name: add_run_variable
-      type: Bash
-      configuration:
-        inputSteps:
-          - name: first
-      execution:
-        onStart:
-          - echo "This step will save a value to a run variable."
-        onExecute:
-          - >-
-            add_run_variables step_info="runNumber $run_number, step_name $step_name, pipeline_name $pipeline_name"
     
