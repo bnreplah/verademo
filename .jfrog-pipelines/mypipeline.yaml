@@ -5,6 +5,7 @@ resources:
     configuration:
       path: "bnreplah/verademo" # {{ .Values.repoPath }}
       gitProvider: "github" # {{ .Values.gitProvider }}
+      sourceArtifactory:  "myArtintegration"
 
 pipelines:
 - name: Verademo_hello_world
