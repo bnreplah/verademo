@@ -1,6 +1,6 @@
 gitProvider: github       # replace with your GitRepo integration name
-gitIntegration: github
-path: "bnreplah/verademo"  
-gitRepositoryPath: "veracodedemo2"     # replace jfrog with your username or org name
-artifactoryIntegration: github 
-
+#gitIntegration: github
+repoPath: "bnreplah/verademo"  
+#gitRepositoryPath: "veracodedemo2"     # replace jfrog with your username or org name
+artifactoryIntegration: myArtintegration 
+deployerRepo: verademo-libs-snapshot-local
