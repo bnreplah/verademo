@@ -49,6 +49,7 @@ pipelines:
             - name: first
           #inherits all the tags from bash
           mvnCommand: "clean install"
+          sourceLocation: "app/"
           integrations:
             - name: "myArtIntegration"
           inputResources:
