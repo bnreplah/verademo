@@ -72,7 +72,7 @@ pipelines:
           - ls -la workspace/upload
           - ls -la workspace/run_state
           - pwd
-          - WRAPPER_VERSION=$( `curl https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/maven-metadata.xml | grep latest |  cut -d '>' -f 2 | cut -d '<' -f 1` )
+          - WRAPPER_VERSION= `curl https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/maven-metadata.xml | grep latest |  cut -d '>' -f 2 | cut -d '<' -f 1` 
           - echo '[INFO] ------------------------------------------------------------------------'
           - echo '[INFO] DOWNLOADING VERACODE JAVA WRAPPER'
           - | 
