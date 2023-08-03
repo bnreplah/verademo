@@ -83,7 +83,6 @@ pipelines:
       configuration:
         inputSteps:
           - name: MvnBuildStep
-          - name: mvnBuildInfo
       execution: 
         onStart:
           - pwd
