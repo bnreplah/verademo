@@ -58,6 +58,9 @@ pipelines:
           #configFileLocation: "./verademo/app/pom.xml"
     - name: checkArtifact
       type: Bash
+      configuration:
+        inputSteps:
+          - name: MvnBuildStep
       execution: 
         onStart:
           - >-
