@@ -1,10 +1,10 @@
 valuesFilePath: ./values.yml
 #resources:
-  #- name: mvn_repo
-  #  type: GitRepo
-  #  configuration:
-  #    path: "bnreplah/verademo" # {{ .Values.repoPath }}
-  #    gitProvider: "GitHub" # {{ .Values.gitProvider }}
+  - name: mvnRepo
+    type: GitRepo
+    configuration:
+      path: "bnreplah/verademo" # {{ .Values.repoPath }}
+      gitProvider: "GitHub" # {{ .Values.gitProvider }}
 
 pipelines:
 - name: Verademo_hello_world
@@ -46,4 +46,6 @@ pipelines:
       configuration:
           #inherits all the tags from bash
           mvnCommand: "clean install"
+          inputResources:
+            - name: mvnRepo
           #configFileLocation: "./verademo/app/pom.xml"
