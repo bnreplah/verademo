@@ -1,37 +1,37 @@
-valuesFilePath: ./values.yml
+valuesFilePath: ./values.yml                              # variables are set in the values.yml or can be overriden in the pipeline execution via the key value pairs
 resources:
-  - name: mvnRepo
-    type: GitRepo
+  - name: mvnRepo  # repo pointing to github integration
+    type: GitRepo  
     configuration:
-      path: "bnreplah/verademo" # {{ .Values.repoPath }}
-      gitProvider: "github" # {{ .Values.gitProvider }}
+      path: {{ .Values.repoPath }}   # Point to name of repo
+      gitProvider: {{ .Values.gitProvider }}    # name of pipeline integration with github token
 
-  - name: mvnBuildInfo
-    type: BuildInfo
+  - name: mvnBuildInfo                                      # buildinfo to be populated later with maven build info from maven build step with the auto publish
+    type: BuildInfo                
     configuration:
-      sourceArtifactory: "myArtIntegration"
+      sourceArtifactory: "myArtIntegration"                 # Connection to Jfrog Artifactory pipeline integration 
 pipelines:
 - name: Verademo_hello_world
   steps:
     
-    - name: MvnBuildStep
-      type: MvnBuild
+    - name: MvnBuildStep                                  # Build step to build the maven project, can rename, but must refer to the renamed value in the inputSteps in any next steps to set it as a prerequisite 
+      type: MvnBuild                                      # Must be MvnBuild
       configuration:
           #inherits all the tags from bash
-          mvnCommand: "clean package"
-          sourceLocation: "app/"
+          mvnCommand: "clean package"                     # Maven build commands
+          sourceLocation: "app/"                          # location of the pom.xml
           integrations:
-            - name: "myArtIntegration"
-            - name: "VeracodeAPICredentialsBen"
+            - name: "myArtIntegration"                    # integration with Artifactory to upload the artifacts back to the Jfrog artifactory 
+            - name: "VeracodeAPICredentialsBen"           # location of the integration with the API credentials stored as secrets
           inputResources:
-            - name: mvnRepo
-          outputResources:
+            - name: mvnRepo                               # resource to build
+          outputResources:                                # outputs the autopublished data to the mvnBuildInfo resource for later reference
             - name:  mvnBuildInfo
           autoPublishBuildInfo: true
-          
-      execution:
+                                                          # Autopublish will automatically publish the build info to the resource listed as the outputResource
+      execution:                                            # Veracode integration occurs in the execution step post success
         onSuccess:
-          - printenv int_VeracodeAPICredentialsBen_VERACODE_API_KEY_ID
+          - echo "--------------------------- VERACODE INTEGRATION ----------------------------- "
           - WRAPPER_VERSION=`curl https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/maven-metadata.xml | grep latest |  cut -d '>' -f 2 | cut -d '<' -f 1`
           - echo '[INFO] ------------------------------------------------------------------------'
           - echo '[INFO] DOWNLOADING VERACODE JAVA WRAPPER'
@@ -39,31 +39,33 @@ pipelines:
             wget https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/$WRAPPER_VERSION/vosp-api-wrappers-java-$WRAPPER_VERSION.jar -O VeracodeJavaAPI.jar
             chmod 755 VeracodeJavaAPI.jar
           - ls -la
+          - echo "-------------------------- Veracode Upload and Scan ---------------------------"
           - java -jar VeracodeJavaAPI.jar -vid $( printenv int_VeracodeAPICredentialsBen_VERACODE_API_KEY_ID ) -vkey $( printenv int_VeracodeAPICredentialsBen_VERACODE_API_KEY_SECRET ) -action uploadandscan -appname "VeraDemo" -filepath dependencyState/resources/mvnRepo/app/target/verademo.war -version "jfrog-test-"${run_number} -deleteincompletescan 2 -createprofile false
+          # ensure the int_VeracodeAPICredentialsBen_VERACODE_API_KEY_* matches a generic pipeline integration with the api key and ID configured within it. int_<pipeline integration name>_<key variable name>
         onFailure:
           - echo "failed the maven build"
-         
-    - name: checkArtifact
-      type: Bash
-      configuration:
-        inputSteps:
-          - name: MvnBuildStep
-      execution: 
-        onStart:
-          - pwd
-        onExecute:
-          - ls -la {{ .resources.mvnRepo.output }}
-          - ls -la workspace/upload
-          - ls -la workspace/cache
-          - ls -la workspace/download
-          - ls -la dependencyState
-        onSuccess:
-          - >-
-            echo "onSuccess executes if the onStart or onExecute sections completed without errors"
-            #cd ./verademo/app
-        onFailure:
-          - >-
-            echo "onFailure executes if either onStart or onExecute end in failure or error."
-        onComplete:
-          - >-
-            echo "completed"
+## Debug step:
+#    - name: checkArtifact
+#      type: Bash
+#      configuration:
+#        inputSteps:
+#          - name: MvnBuildStep
+#      execution: 
+#        onStart:
+#          - pwd
+#        onExecute:
+#          - ls -la {{ .resources.mvnRepo.output }}
+#          - ls -la workspace/upload
+#          - ls -la workspace/cache
+#          - ls -la workspace/download
+#          - ls -la dependencyState
+#        onSuccess:
+#          - >-
+#            echo "onSuccess executes if the onStart or onExecute sections completed without errors"
+#            #cd ./verademo/app
+#        onFailure:
+#          - >-
+#            echo "onFailure executes if either onStart or onExecute end in failure or error."
+#        onComplete:
+#          - >-
+#            echo "completed"
