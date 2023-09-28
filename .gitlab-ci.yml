@@ -1,0 +1,186 @@
+# Gitlab
+stages:
+  - build
+  - scan
+
+
+
+
+
+# ################################################################################################################
+# # Dependencies for maven
+# ################################################################################################################
+
+# ################################################################################################################
+# # Variables
+# ################################################################################################################
+variables:
+#   This will suppress any download for dependencies and plugins or upload messages which would clutter the console log.
+#   `showDateTime` will show the passed time in milliseconds. You need to specify `--batch-mode` to make this work.
+  MAVEN_OPTS: >-
+    -Dhttps.protocols=TLSv1.2
+    -Dmaven.repo.local=.m2/repository
+    -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN
+    -Dorg.slf4j.simpleLogger.showDateTime=true
+    -Djava.awt.headless=true
+#   As of Maven 3.3.0 instead of this you may define these options in `.mvn/maven.config` so the same config is used
+#   when running from the command line.
+#   `installAtEnd` and `deployAtEnd` are only effective with recent version of the corresponding plugins.
+  MAVEN_CLI_OPTS: >-
+    --batch-mode
+    --errors
+    --show-version
+    -DinstallAtEnd=true
+    -DdeployAtEnd=true
+    -DartifactId=verademo
+
+  OUTPUT_FILE: ".m2/verademo/app/target/verademo.war"
+  BASELINE_FILE: pipeline_baseline.json
+  PROJECT_NAME: Verademo
+  REPOSITORY_NAME: Verademo
+
+# ################################################################################################################
+# # End Dependencies for maven
+# ################################################################################################################
+
+# ubuntu linux image
+image: ubuntu:latest
+
+
+
+
+###################################################################################################################################################################################################
+## Works
+###################################################################################################################################################################################################
+
+
+
+# build-env:
+#   image: ubuntu:latest
+#   stage: build
+#   script:
+#     - apt update
+#     - apt search curl
+#     - apt install -y curl
+#     - apt install -y openjdk-11-jre
+
+
+#########################################################################################################
+# Java Build
+##########################################################################################################
+
+
+java-build:
+  image: maven:3.8.3-openjdk-17
+  stage: build
+  # Cache downloaded dependencies and plugins between builds. The key here seperates one cache per branch/tag
+  # ($CI_COMMIT_REF_SLUG)
+  cache:
+    key: "maven-$CI_COMMIT_REF_SLUG"
+    paths:
+      - .m2/repository
+  script:
+    - mvn clean package -f app/pom.xml
+    - pwd && ls -la app/target/
+  artifacts:
+    paths:
+    - app/target/verademo.war
+  allow_failure: false
+
+#########################################################################################################
+# Pipeline Scan
+##########################################################################################################
+
+# pipeline-scan-docker:
+#   dependencies:
+#     - java-build
+#   stage: scan
+#   image: veracode/pipeline-scan:latest
+#   script:
+#     - java -jar /opt/veracode/pipeline-scan.jar 
+#         -vid $VERACODE_API_ID -vkey $VERACODE_API_SECRET
+#         --gl_issue_generation true 
+#         --file app/target/verademo.war  
+#   allow_failure: true
+
+
+pipeline-scan:
+  image: ubuntu:latest
+  stage: scan
+  dependencies:
+    - java-build
+  artifacts:
+    name: ${CI_PROJECT_NAME}_${CI_COMMIT_REF_NAME}_${CI_COMMIT_SHA}_pipeline-results
+    paths:
+      - results.json
+    expire_in: 1 week
+    when: always
+  script:
+    - apt update
+    - apt install -y curl unzip
+    - apt install -y openjdk-11-jre
+    - curl -O https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
+    - unzip pipeline-scan-LATEST.zip pipeline-scan.jar
+    - java -jar pipeline-scan.jar
+      --veracode_api_id "${VERACODE_API_ID}"
+      --veracode_api_key "${VERACODE_API_SECRET}"
+      --file "app/target/verademo.war"
+      --gl_issue_generation true
+      --fail_on_severity="Very High, High"
+      --fail_on_cwe="80"
+      --timeout "${CI_TIMEOUT}"
+      --project_name "${CI_PROJECT_PATH}"
+      --project_url "${CI_REPOSITORY_URL}"
+      --project_ref "${CI_COMMIT_REF_NAME}"
+  allow_failure: true
+
+
+#########################################################################################################
+# SCA Scan
+##########################################################################################################
+
+
+sca-scan:
+  stage: scan
+  image: maven:3.8.3-openjdk-17
+  script:
+    # - apt update
+    # - apt install -y curl unzip
+    # - apt install -y openjdk-11-jre
+    - export SRCCLR_SCM_NAME=$CI_PROJECT_PATH
+    - export SRCCLR_SCM_URI=$CI_PROJECT_URL
+    - export SRCCLR_SCM_REF=$(if [ "$CI_COMMIT_TAG" == "" ]; then echo $CI_COMMIT_REF_NAME; else echo $CI_COMMIT_TAG; fi);
+    - export SRCCLR_SCM_REF_TYPE=$(if [ "$CI_COMMIT_TAG" == "" ]; then echo "branch"; else echo "tag"; fi);
+    - export SRCCLR_SCM_REV=$CI_COMMIT_SHA
+    - export SRCCLR_PR_ON=methods
+    - export SRCCLR_NO_BREAKING_UPDATES=true
+    - export SRCCLR_IGNORE_CLOSED_PRS=false
+    - export SRCCLR_SCM_TOKEN="$PRIVATE_TOKEN"
+    - export SRCCLR_SCM_TYPE=GITLAB
+    - curl -sSL https://download.sourceclear.com/ci.sh | sh -s -- scan ./app/ --update-advisor 
+  allow_failure: true
+
+
+#########################################################################################################
+# Upload-and-Scan Scan
+##########################################################################################################
+
+
+upload-and-scan:
+  stage: scan
+  image: veracode/api-wrapper-java:latest
+  dependencies:
+    - java-build
+  script:
+    - ls
+    - java -jar /opt/veracode/api-wrapper.jar 
+        -vid ${VERACODE_API_ID}
+        -vkey ${VERACODE_API_SECRET} 
+        -action UploadAndScan
+        -createprofile false
+        -appname ${CI_PROJECT_NAME}
+        -version $CI_JOB_ID
+        -filepath app/target/verademo.war
+  allow_failure: true
+
+
