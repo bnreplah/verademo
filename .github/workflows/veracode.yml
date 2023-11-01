@@ -37,7 +37,7 @@ jobs:
         repository: 'bhalpern-GHOrg-Demo/verademo'
 
     - run: cd app/
-    - run: mvn clean
+    - run: mvn clean --file ./pom.xml
     - run: mvn clean package --file pom.xml
     
     - run: zip -r veracode-scan-target.zip target/verademo.war
