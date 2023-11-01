@@ -34,7 +34,7 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it and copies all sources into ZIP file for submitting for analysis. Replace this section with your applications build steps
     - uses: actions/checkout@v3
       with:
-        repository: 'https://github.com/bhalpern-GHOrg-Demo/verademo'
+        repository: 'bhalpern-GHOrg-Demo/verademo'
 
     - run: cd app/
     - run: mvn clean
