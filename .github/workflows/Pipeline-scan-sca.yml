@@ -63,7 +63,7 @@ jobs:
       - name: Veracode Pipeline-Scan
         # You may pin to the exact commit or the version.
         # uses: veracode/Veracode-pipeline-scan-action@c94abab5dc83cccc825c05120b746835fc6f673a
-        uses: veracode/Veracode-pipeline-scan-action@v1.0.3
+        uses: veracode/Veracode-pipeline-scan-action@v1.0.10
         with:
             # vid
             vid: ${{ secrets.VERACODE_API_ID }}
