@@ -5,7 +5,7 @@ on:
   
 env:
   SRCCLR_API_TOKEN: ${{secrets.SRCCLR_API_TOKEN}}
-#  SRCCLR_SCM_URI: https://github.com/bnreplah/verademo
+  SRCCLR_SCM_URI: https://github.com/bnreplah/verademo
   SRCCLR_SCM_SUB_PATH: /app
 
 jobs:
@@ -58,7 +58,6 @@ jobs:
         with:
           # Authorization token to query and create issues
           github_token: ${{ secrets.GH_TOKEN }}
-          # 
           quick: false # optional, default is false
           # Show update advisor
           update_advisor: true # optional, default is false
@@ -69,7 +68,7 @@ jobs:
           # The maximum allowed cvss in found vulnerabilities to pass the step
           #fail-on-cvss: # optional, default is 10
           # An attribute to instruct the action to create an issue from found vulnerability or just simple text output
-          create-issues: true # optional, default is false
+          create-issues: false # optional, default is false
           # A path within the repository where the build definition starts
           path: app/ # optional, default is .
           # Run the SRCCLR in debug mode
