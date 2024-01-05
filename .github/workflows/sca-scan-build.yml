@@ -5,7 +5,7 @@ on:
   
 env:
   SRCCLR_API_TOKEN: ${{secrets.SRCCLR_API_TOKEN}}
-  SRCCLR_SCM_URI: https://github.com/bnreplah/verademo
+#  SRCCLR_SCM_URI: https://github.com/bnreplah/verademo
   SRCCLR_SCM_SUB_PATH: /app
 
 jobs:
@@ -30,12 +30,13 @@ jobs:
           
       - name: Build with Maven
         run: |
+          pwd
           cd app/
           mvn -B clean package --file pom.xml
           ls target/
           
       - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v2.2.4
+        uses: actions/upload-artifact@latest
         with:
             # Artifact name
             name: verademo-artifact
@@ -53,7 +54,7 @@ jobs:
       - name: Veracode Dependency Scanning
         # You may pin to the exact commit or the version.
         # uses: veracode/veracode-sca@d8ce4a08eebf1a6c5e7759c1dc53c1172a3e7e64
-        uses: veracode/veracode-sca@v1.09
+        uses: veracode/veracode-sca@latest
         with:
           # Authorization token to query and create issues
           github_token: ${{ secrets.GH_TOKEN }}
