@@ -41,7 +41,10 @@ pipelines:
           - ls -la
           - echo "-------------------------- Veracode Upload and Scan ---------------------------"
           - java -jar VeracodeJavaAPI.jar -vid $( printenv int_VeracodeAPICredentialsBen_VERACODE_API_KEY_ID ) -vkey $( printenv int_VeracodeAPICredentialsBen_VERACODE_API_KEY_SECRET ) -action uploadandscan -appname "VeraDemo" -filepath dependencyState/resources/mvnRepo/app/target/verademo.war -version "jfrog-test-"${run_number} -deleteincompletescan 2 -createprofile false
+          - echo "----------------------- Veracode SCA Agent-Based Scan -------------------------"
+          - curl -sSL https://download.sourceclear.com/ci.sh | sh -s scan dependencyState/resources/mvnRepo/app/
           # ensure the int_VeracodeAPICredentialsBen_VERACODE_API_KEY_* matches a generic pipeline integration with the api key and ID configured within it. int_<pipeline integration name>_<key variable name>
+          # ensure the int_VeracodeAPICredentialsBen_SRCCLR_API_TOKEN matches a generic pipeline integration with the SRCCLR_API_TOKEN configured within it. int_<pipeline integration name>_<key variable name>
         onFailure:
           - echo "failed the maven build"
 ## Debug step:
