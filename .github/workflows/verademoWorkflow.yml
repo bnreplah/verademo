@@ -61,7 +61,7 @@ jobs:
       - name: Veracode Pipeline-Scan
       # You may pin to the exact commit or the version.
       # uses: veracode/Veracode-pipeline-scan-action@7bbcef3efc8720d36302fc912a7d63f7aba34f76
-        uses: veracode/Veracode-pipeline-scan-action@v1.0.9
+        uses: veracode/Veracode-pipeline-scan-action@v1.0.14
         with:
             # vid
             vid: ${{secrets.VERACODE_API_ID}}
@@ -70,7 +70,7 @@ jobs:
             # Filename of the packaged application to upload and scan.
             file: analysis/verademo.war
             # GITHUB_TOKEN or a repo scoped PAT.
-            token: ${{ github.token }} # default is ${{ github.token }}
+            token: ${{ secrets.GH_TOKEN }} # default is ${{ github.token }}
             # Name of the security policy to download as a file. Required only if you want to download the configuration for a custom policy defined by your organization. After downloading the policy, you can provide this file in a subsequent command using the policy_file parameter.
             #request_policy: # optional
             # Fail the pipeline job if the scan finds flaws of the specified severities. Enter a comma-separated list of severities in quotation marks.
