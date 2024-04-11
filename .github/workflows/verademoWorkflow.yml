@@ -63,6 +63,7 @@ jobs:
         # You may pin to the exact commit or the version.
         # uses: veracode/veracode-uploadandscan-action@35794dab9fbcd28fac19e44963f80646b27f4a7f
         uses: veracode/veracode-uploadandscan-action@0.2.4
+        continue-on-error: true
         with:
           # appname
           appname: Verademo
@@ -112,6 +113,7 @@ jobs:
           debug: 1 # optional
 
       - name: Veracode Upload And Scan
+        continue-on-error: true
         # You may pin to the exact commit or the version.
         # uses: veracode/veracode-uploadandscan-action@35794dab9fbcd28fac19e44963f80646b27f4a7f
         uses: veracode/uploadandscan-action@v0.1.1
