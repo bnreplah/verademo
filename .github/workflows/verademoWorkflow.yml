@@ -70,7 +70,7 @@ jobs:
           # createprofile
           createprofile: false # default is true
           # filepath
-          filepath: analysis/verademo.war
+          filepath: analysis/
           # version
           version:  ${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }} # default is Scan from Github job: ${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
           # vid
@@ -123,7 +123,7 @@ jobs:
           # createprofile
           createprofile: false # default is true
           # filepath
-          filepath: analysis/verademo.war
+          filepath: analysis/
           # version
           version:  ${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}-run2 # default is Scan from Github job: ${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
           # vid
