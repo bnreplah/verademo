@@ -1,9 +1,6 @@
 version: 0.2
 
 phases:
-  install:
-    runtime-versions:
-      java: corretto17
   pre_build:
     commands:
       - echo Nothing to do in the pre_build phase...
@@ -12,6 +9,7 @@ phases:
     commands:
       - echo Build started on `date`
       - mvn -B clean package --file app/pom.xml
+      - java -jar /opt/veracode/api-wrapper.jar -vid $VID -vkey $VKEY -action UploadAndScan -createprofile true -appname Verademo -version $(date +%Y-%m-%d-%H:%M)} -filepath app/target/verademo.war
   post_build:
     commands:
       - echo post build step
