@@ -5,15 +5,17 @@ phases:
     runtime-versions:
       java: corretto11
     commands:
+      - git clone https://github.com/bnreplah/verademo
+      - WRAPPER_VERSION=`curl https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/maven-metadata.xml | grep latest |  cut -d '>' -f 2 | cut -d '<' -f 1`
       - ls
       - uname -a
   pre_build:
     commands:
       - echo Nothing to do in the pre_build phase...
       - aws configure set region us-east-1
-      - VERACODE_KEY=$(aws ssm get-parameter --name VKEY --query "Parameter.Value" --output text)
-      - VERACODE_ID=$(aws ssm get-parameter --name VID --query "Parameter.Value" --output text)
-      - echo "$VERACODE_ID"
+      - VERACODE_API_KEY=$(aws ssm get-parameter --name VKEY --query "Parameter.Value" --output text)
+      - VERACODE_API_ID=$(aws ssm get-parameter --name VID --query "Parameter.Value" --output text)
+      - echo "$VERACODE_API_ID"
   build:
     commands:
       - echo Build started on `date`
