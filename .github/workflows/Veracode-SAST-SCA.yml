@@ -162,7 +162,7 @@ jobs:
           # platform selected modules
           #selected: # optional
           # selected modules like from previous scan
-          selectedpreviously: true
+          #selectedpreviously: true
           # teams
           teams: "Demo Team" # optional
           # teams
