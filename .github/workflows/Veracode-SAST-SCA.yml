@@ -1,4 +1,4 @@
-name: Veracode-SAST-SCA-Pipelinescan
+name: Veracode-SAST-SCA-Pipelinescan-import-issues Actions
 
 on:
   push:
@@ -50,8 +50,10 @@ jobs:
         uses: wei/curl@master
         with:
           args: -O https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
+          
       - name: Unzip the Pipeline Scanner
-        run: unzip pipeline-scan-LATEST.zip -y
+        run: unzip pipeline-scan-LATEST.zip 
+      
       - name: Run Pipeline Scanner
         run: java -Dpipeline.debug=true -jar pipeline-scan.jar --veracode_api_id "${{secrets.VERACODE_API_ID}}" --veracode_api_key "${{secrets.VERACODE_API_KEY}}" --file "app/target/verademo.war" --fail_on_severity="Very High, High"
 
