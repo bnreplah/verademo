@@ -33,7 +33,8 @@ jobs:
           mvn -B clean package --file pom.xml
           ls target/
           cd ..
-          
+          touch results.json
+          touch filtered_results.json
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
