@@ -1,6 +1,7 @@
 name: Veracode-SAST-SCA-Pipelinescan
 
 on:
+  push:
   workflow_dispatch:
   
 env:
@@ -110,6 +111,64 @@ jobs:
           create_baseline_from: standard # optional
           # Fail the build upon findings. Takes true or false
           fail_build: false # optional
+
+      - name: Veracode Upload And Scan
+        # You may pin to the exact commit or the version.
+        # uses: veracode/veracode-uploadandscan-action@98e2a2941b985e55bfe469ebcb970b2e686625e4
+        uses: veracode/veracode-uploadandscan-action@0.2.6
+        with:
+          # appname
+          appname: ${{ github.repository }}
+          # createprofile
+          createprofile: true
+          # filepath
+          filepath: app/target/verademo.war
+          # version
+          version:  ${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
+          # vid
+          vid: ${{ secrets.VERACODE_API_ID }}
+          # vkey
+          vkey:  ${{ secrets.VERACODE_API_KEY }}
+          # true or false
+          #createsandbox: # optional
+          # name of the sandbox
+          #sandboxname: # optional
+          # wait X minutes for the scan to complete
+          #scantimeout: # optional
+          # modules to exclude from module selection
+          #exclude: # optional
+          # modules to include in module selection
+          #include: # optional
+          # business criticality - policy selection
+          #criticality: # optional
+          # filename pattern
+          #pattern: # optional
+          # replacement
+          #replacement: # optional
+          # specify to scan in a sandbox
+          #sandboxid: # optional
+          # All top level modules
+          scanallnonfataltoplevelmodules: true
+          # platform selected modules
+          #selected: # optional
+          # selected modules like from previous scan
+          selectedpreviously: true
+          # teams
+          teams: "Demo Team" # optional
+          # teams
+          toplevel: true 
+          # automatically delete the current scan if there are any errors when uploading files or starting the scan
+          deleteincompletescan: 2 
+          # Interval, in seconds, to poll for the status of a running scan. Value range is 30 to 120 (two minutes). Default is 120.
+          #scanpollinginterval: # optional
+          # specify version of the Java API Wrapper; default is latest
+          #javawrapperversion: # optional
+          # show detailed diagnostic information, which you can use for debugging, in the output.
+          debug: true
+          # automatically select all new top-level modules for inclusion in the scan
+          includenewmodules: true
+          
+          
           
       - name: Veracode Static Analysis Pipeline Scan and SARIF import
         # You may pin to the exact commit or the version.
@@ -168,7 +227,9 @@ jobs:
           allow-dirty: true # optional, default is false
           # Run the SRCCLR with the `--recursive` option
           #recursive: # optional, default is false
-         
+
+      
+      
       - name: Veracode scan results to GitHub issues Action
         # You may pin to the exact commit or the version.
         # uses: veracode/veracode-flaws-to-issues@e03c95a2d9ce730870fe160ff77bbce3b7f0e32d
