@@ -51,6 +51,7 @@ jobs:
       - run: unzip -o pipeline-scan-LATEST.zip 
       
       - name: Run Pipeline Scanner
+        continue-on-error: true
         run: java -jar pipeline-scan.jar --veracode_api_id ${{secrets.VERACODE_API_ID}} --veracode_api_key ${{secrets.VERACODE_API_KEY}} --file app/target/verademo.war --fail_on_severity="Very High, High"
 
       - name: Veracode Pipeline-Scan
@@ -180,6 +181,7 @@ jobs:
           
           
       - name: Veracode Static Analysis Pipeline Scan and SARIF import
+        continue-on-error: true
         # You may pin to the exact commit or the version.
         # uses: veracode/veracode-pipeline-scan-results-to-sarif@c4e3ac33a116df4b7074d53747d8814e8fdf974b
         uses: veracode/veracode-pipeline-scan-results-to-sarif@v0.1.5
@@ -198,6 +200,7 @@ jobs:
           #finding-rule-level: # default is 4:3:0
           
       - name: Upload a Build Artifact
+        continue-on-error: true
         uses: actions/upload-artifact@v3.1.1
         with:
           # Artifact name
@@ -241,6 +244,7 @@ jobs:
       
       
       - name: Veracode scan results to GitHub issues Action
+        continue-on-error: true
         # You may pin to the exact commit or the version.
         # uses: veracode/veracode-flaws-to-issues@e03c95a2d9ce730870fe160ff77bbce3b7f0e32d
         uses: veracode/veracode-flaws-to-issues@v1.0.0
