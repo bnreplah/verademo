@@ -1,4 +1,4 @@
-name: Pipelinescanner Verademo Maven Build
+name: Pipelinescanner Verademo Maven Build + SCA ABS
 
 on:
   workflow_dispatch:
