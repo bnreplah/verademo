@@ -83,6 +83,19 @@ steps:
 
 # store artifacts for the pipeline scanner
 
+    ##################################################################################################
+    # API Calls - Downloading API Wrapper
+    ##################################################################################################
+#    - task: PowerShell@2
+#      inputs:
+#        targetType: 'inline'
+#        script: |
+#          $versionstring = curl https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/maven-metadata.xml | findstr /r "latest";
+#          $version = $versionstring.Trim() -replace '<latest>', '' -replace '</latest>', '';
+#          curl https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/$version/vosp-api-wrappers-java-$version-dist.zip -o dist.zip
+#          unzip -o dist.zip
+#          ls
+
 #- publish: $(System.DefaultWorkingDirectory)/results.json
 #  artifact: VeracodeBaseline
 ## This task makes the pipeline build artifacts available in a known location for upload to Veracode
