@@ -7,6 +7,7 @@ phases:
     commands:
       - git clone https://github.com/bnreplah/verademo
       - WRAPPER_VERSION=`curl https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/maven-metadata.xml | grep latest |  cut -d '>' -f 2 | cut -d '<' -f 1`
+      - wget "https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/$WRAPPER_VERSION/vosp-api-wrappers-java-$WRAPPER_VERSION.jar" -O VeracodeJavaAPI.jar
       - ls
       - uname -a
   pre_build:
