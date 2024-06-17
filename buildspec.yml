@@ -21,7 +21,8 @@ phases:
     commands:
       - echo Build started on `date`
       - mvn -B clean package --file app/pom.xml
-      - java -jar /opt/veracode/api-wrapper.jar -vid $VERACODE_ID -vkey $VERACODE_KEY -action UploadAndScan -createprofile true -appname Verademo -version $(date +%Y-%m-%d-%H:%M)} -filepath app/target/verademo.war
+      # Uncomment lines if using the Veracode Authored Docker Image: https://hub.docker.com/r/veracode/api-wrapper-java
+      #- java -jar /opt/veracode/api-wrapper.jar -vid $VERACODE_ID -vkey $VERACODE_KEY -action UploadAndScan -createprofile true -appname Verademo -version $(date +%Y-%m-%d-%H:%M)} -filepath app/target/verademo.war
       #- java -jar /opt/veracode/api-wrapper.jar -vid $VERACODE_ID -vkey $VERACODE_KEY -action UploadAndScan -createprofile true -appname Verademo -version $(date +%Y-%m-%d-%H:%M)} -filepath app/target/verademo.war
   post_build:
     commands:
