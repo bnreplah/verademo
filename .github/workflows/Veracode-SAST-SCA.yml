@@ -46,8 +46,8 @@ jobs:
             # The desired behavior if no files are found using the provided path.
             if-no-files-found: error
       
-      - run: curl -O https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
-          
+      #- run: curl -O https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
+      - run: wget https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip    
       - run: unzip -o pipeline-scan-LATEST.zip 
       
       - name: Run Pipeline Scanner
