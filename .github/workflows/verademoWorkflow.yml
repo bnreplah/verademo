@@ -179,3 +179,18 @@ jobs:
           #javawrapperversion: # optional
           # show detailed diagnostic information, which you can use for debugging, in the output.
           debug: 1 # optional
+
+      - name: Build JSON file
+        run: |
+          touch input.json
+          echo '{"name": "${{ vars.DAST_NAME}}", "scans": [{"scan_config_request": { "target_url": { "url": "${{vars.SCAN_URL}}" }}}],"schedule": {"duration": {"length": 1,"unit": "DAY"},"scheduled": true,"now": true }}' >> input.json
+      - name: Create DAST Scan
+        run: |
+          python --version
+          python -m pip install --upgrade pip wheel
+          python -m pip install httpie
+          pip install veracode-api-signing
+          cat input.json | http --auth-type=veracode_hmac POST "https://api.veracode.com/was/configservice/v1/analyses?run_verification=true" 
+        env:
+          VERACODE_API_KEY_ID: ${{ secrets.VERACODE_API_ID }}
+          VERACODE_API_KEY_SECRET: ${{ secrets.VERACODE_API_KEY }}
