@@ -1,0 +1,81 @@
+image: maven:3.5.3
+
+pipelines:
+
+  default:
+    
+# - First build your project
+    
+       - step:
+           name: 'maven'
+           script:
+             - mvn clean package -f app/pom.xml
+           artifacts:
+              paths:
+                - app/target/verademo.war
+
+
+
+# - Here we are running a Veracode Software Composition Analysis Agent-Based Scan 
+# - First we are invoking the Veracode SCA Agent-Based Scanner.
+# - Next, we are running it directly against this repository.
+# - You will need to leverage a Veracode SCA Agent token in order to authenticate the SCA Agent for a successful scan.
+# - Results will be output into the console output as well as uploaded to the Veracode Platform.
+# - You can find additional information about our SCA Agent-Based Scan here: https://help.veracode.com/r/c_SC_platform
+       - parallel: 
+         - step:           
+             name: 'Veracode Agent Based SCA Scan'
+             trigger: manual
+             script:
+                - cd ./app
+                - curl -sSL https://download.sourceclear.com/ci.sh | sh
+
+
+  # - Here we are running a Veracode Static Analysis Pipeline Scan            
+         - step:
+             name: 'Veracode Pipeline Scan'
+             trigger: manual
+             script:
+               - curl -kO https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
+               - unzip pipeline-scan-LATEST.zip pipeline-scan.jar
+               - java -jar pipeline-scan.jar -f app/target/verademo.war -vid ${VERACODE_API_ID} -vkey ${VERACODE_API_KEY} --issue_details true --fail_on_severity="Very High, High" --fail_on_cwe="80" --issue_details true
+  # - First we are downloading the latest Pipeline Scanner, and extracting and running it.
+  # - Next, we have are calling our API Credentials, pointing the scanner at the artifact we wish to scan, and then have our failure parameters in place.
+  # - If you wish to utilize Baseline File, you would add that as another line to point that at your baseline.json file which would sit in this repository.
+  # - For our Pipeline Scan, we have set our allow_failure to FALSE by default.
+  # - This is in order to break the build if we find flaws that violate our failure parameters.
+  # - Results will be output into the console output.
+  # - You can find additional information about our Static Pipeline Scan here: https://help.veracode.com/r/c_about_pipeline_scan
+
+
+         - step: 
+             name: 'development-upload-for-sast'
+             trigger: manual
+             script:
+               - VERACODE_WRAPPER_VERSION=`curl https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/maven-metadata.xml | grep latest |  cut -d '>' -f 2 | cut -d '<' -f 1`
+               - wget https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/${VERACODE_WRAPPER_VERSION}/vosp-api-wrappers-java-${VERACODE_WRAPPER_VERSION}.jar -O veracodeJavaAPI.jar 
+               - java -jar veracodeJavaAPI.jar -vid ${VERACODE_API_ID} -vkey ${VERACODE_API_KEY}
+                 -action UploadAndScan -appname "Verademo" -createprofile false -autoscan true -sandboxname "bitbucket-development" -createsandbox true
+                 -filepath ./app/target/verademo.war -version "Job ${BITBUCKET_BUILD_NUMBER} in ${BITBUCKET_PROJECT_KEY}"
+  #    allow_failure: true
+
+         - step: 
+             name: 'release-upload-for-sast'
+             trigger: manual
+             script:
+               - wget https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/$VERACODE_WRAPPER_VERSION/vosp-api-wrappers-java-$VERACODE_WRAPPER_VERSION.jar -O veracodeJavaAPI.jar 
+               - java -jar veracodeJavaAPI.jar -vid ${VERACODE_API_ID} -vkey ${VERACODE_API_KEY}
+                 -action UploadAndScan -appname "Verademo" -createprofile false -autoscan true -sandboxname "bitbucket-release" -createsandbox true
+                 -filepath ./app/target/verademo.war -version "Job ${BITBUCKET_BUILD_NUMBER} in ${BITBUCKET_PROJECT_KEY}" 
+  #         allow_failure: true
+
+         - step: 
+             name: 'policy-upload-for-sast'
+             trigger: manual
+             script:
+               - wget https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/$VERACODE_WRAPPER_VERSION/vosp-api-wrappers-java-$VERACODE_WRAPPER_VERSION.jar -O veracodeJavaAPI.jar 
+               - java -jar veracodeJavaAPI.jar -vid ${VERACODE_API_ID} -vkey ${VERACODE_API_KEY}
+                 -action UploadAndScan -appname "Verademo" -createprofile false -autoscan true
+                 -filepath ./app/target/verademo.war -version "Job ${BITBUCKET_BUILD_NUMBER} in ${BITBUCKET_PROJECT_KEY}"
+  # - optionally waith for the scan to complete
+  #               -scantimeout 15
