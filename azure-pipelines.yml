@@ -51,6 +51,17 @@ steps:
     goals: 'package'
 
 
+steps:
+- task: Bash@3
+  env:
+    VERACODE_API_KEY_ID: $(VERACODE_API_ID)
+    VERACODE_API_KEY_SECRET: $(VERACODE_API_KEY)
+  inputs:
+    targetType: 'inline'
+    script: |
+      curl -fsS https://tools.veracode.com/veracode-cli/install | sh
+      ./veracode package -a -d -t directory -s app/
+
 - task: Veracode@3
   inputs:
     ConnectionDetailsSelection: 'Credentials'
@@ -58,7 +69,7 @@ steps:
     apiKey: '$(VERACODE_API_KEY)'
     veracodeAppProfile: '$(system.teamProject)'
     version: '$(build.buildNumber)'
-    filepath: '$(System.DefaultWorkingDirectory)' # filepath or folderpath of files to upload to Veracode
+    filepath: '$(System.DefaultWorkingDirectory)/*.war' # filepath or folderpath of files to upload to Veracode
     createProfile: true
     importResults: true
     maximumWaitTime: '360'
