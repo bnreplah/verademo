@@ -80,8 +80,8 @@ jobs:
           uses: Veracode/veracode-fix@expression-pythonDebug
           with:
             inputFile: results.json
-            vid: ${{ secrets.VID }}
-            vkey: ${{ secrets.VKEY }}
+            vid: ${{ secrets.VERACODE_API_ID }}
+            vkey: ${{ secrets.VERACODE_API_KEY }}
             source_base_path_1: "com/:app/src/main/java/com/"
             source_base_path_2: "WEB-INF:app/src/main/webapp/WEB-INF"
             language: java
