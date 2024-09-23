@@ -86,7 +86,7 @@ jobs:
             source_base_path_2: "WEB-INF:app/src/main/webapp/WEB-INF"
             language: java
             createPR: true
-            cwe: '*'
+            cwe: '89,117,209'
             
             fixType: batch
             files: changed
