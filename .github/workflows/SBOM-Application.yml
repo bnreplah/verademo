@@ -23,7 +23,7 @@ jobs:
           http --auth-type veracode_hmac GET "https://api.veracode.com/srcclr/sbom/v1/targets/$GUID/cyclonedx?type=application" >> ${{ env.APP_NAME }}-SBOM.json
         
       - name: upload SBOM report
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: SBOM
           path: /tmp/${{ env.APP_NAME }}-SBOM.json
