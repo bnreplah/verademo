@@ -174,7 +174,7 @@ jobs:
           # teams
           #toplevel: # optional
           # automatically delete the current scan if there are any errors when uploading files or starting the scan
-          deleteincompletescan: true # optional
+          deleteincompletescan: 1 # optional
           # specify version of the Java API Wrapper; default is latest
           #javawrapperversion: # optional
           # show detailed diagnostic information, which you can use for debugging, in the output.
