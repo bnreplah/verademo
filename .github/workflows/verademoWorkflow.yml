@@ -12,6 +12,11 @@ on:
             required: true
             type: 'boolean'
             default: 'true'
+          UseActions:
+            description: 'Package Using Veracode CLI'
+            required: true
+            type: 'boolean'
+            default: 'true'
 env:
   SRCCLR_API_TOKEN: ${{secrets.SRCCLR_API_TOKEN}}
   VERACODE_API_KEY_ID: ${{secrets.VERACODE_API_ID}}
@@ -85,7 +90,10 @@ jobs:
           merge-multiple: true
           
       - run: pwd
-      - run: ls -la analysis/
+      - run: |
+          ls -la
+          ls -la .veracode/build/
+          
       - name: Veracode Pipeline-Scan
       # You may pin to the exact commit or the version.
       # uses: veracode/Veracode-pipeline-scan-action@7bbcef3efc8720d36302fc912a7d63f7aba34f76
