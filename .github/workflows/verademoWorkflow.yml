@@ -13,10 +13,26 @@ on:
             type: 'boolean'
             default: 'true'
           UseActions:
-            description: 'Package Using Veracode CLI'
+            description: 'Use the Veracode Actions'
             required: true
             type: 'boolean'
             default: 'true'
+          Run-Pipeline-Scan:
+            description: 'Run the Pipeline scan'
+            required: true
+            type: 'boolean'
+            default: 'true'
+          Run-Upload-and-Scan:
+            description: 'Run the Upload and Scan'
+            required: true
+            type: 'boolean'
+            default: 'true'
+          Run-SCA-Agent-Based-Scan:
+            description: 'Run the SCA Agent Based Scan'
+            required: true
+            type: 'boolean'
+            default: 'true'
+            
 env:
   SRCCLR_API_TOKEN: ${{secrets.SRCCLR_API_TOKEN}}
   VERACODE_API_KEY_ID: ${{secrets.VERACODE_API_ID}}
@@ -87,7 +103,7 @@ jobs:
         with: 
           name: verademo-artifact
           path: .veracode/build/
-          merge-multiple: true
+          merge-multiple: name
           
       - run: pwd
       - run: |
