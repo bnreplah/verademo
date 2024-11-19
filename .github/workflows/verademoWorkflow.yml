@@ -80,7 +80,9 @@ jobs:
       - uses: actions/download-artifact@v2.0.10
         with: 
           name: verademo-artifact
-          path: analysis/
+          path: .veracode/build/
+          merge-multiple: true
+          
       - run: pwd
       - run: ls -la analysis/
       - name: Veracode Pipeline-Scan
