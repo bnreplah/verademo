@@ -1,11 +1,11 @@
 name: Verademo Default Workflow - Maven Build and Scan MultiJob
 
 on:
-#  push:
-#    branches: [ main ]
-#  pull_request:
-#    branches: [ main ]
-    workflow_dispatch: 
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch: 
       inputs:
           VeracodeCLI:
             description: 'Package Using Veracode CLI'
