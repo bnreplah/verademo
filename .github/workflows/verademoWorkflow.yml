@@ -43,7 +43,9 @@ jobs:
             curl -fsS https://tools.veracode.com/veracode-cli/install | sh
             ./veracode --help
             ls
-            ./veracode package -a -d -s . 
+            mkdir .veracode 
+            mkdir .veracode/build/ 
+            ./veracode package -a -d -s . -o .veracode/build/
             ls
             
             
@@ -53,7 +55,10 @@ jobs:
         run: |
           cd app/
           mvn -B clean package --file pom.xml
+          mkdir .veracode 
+          mkdir .veracode/build/ 
           ls target/
+          mv target/*.war -t .veracode/build/
           
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4.4.3
@@ -62,7 +67,7 @@ jobs:
             name: verademo-artifact
             # optional, default is artifact
             # A file, directory or wildcard pattern that describes what to upload
-            path: app/target/verademo.war
+            path: .veracode/build/
             # The desired behavior if no files are found using the provided path.
             if-no-files-found: warn
         
