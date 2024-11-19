@@ -42,6 +42,11 @@ jobs:
         run: |
             curl -fsS https://tools.veracode.com/veracode-cli/install | sh
             ./veracode --help
+            ls
+            ./veracode package -d -s -a 
+            ls
+            
+            
           
       - name: Build with Maven
         if: ${{ ! github.event.inputs.VeracodeCLI }}
@@ -59,7 +64,7 @@ jobs:
             # A file, directory or wildcard pattern that describes what to upload
             path: app/target/verademo.war
             # The desired behavior if no files are found using the provided path.
-            if-no-files-found: error
+            if-no-files-found: warn
         
   veracode-sast-analysis:
     # Requires the previous step to be completed prior to moving onto this step, otherwise can be set to run in parallel
