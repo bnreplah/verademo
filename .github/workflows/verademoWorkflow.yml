@@ -43,7 +43,7 @@ jobs:
             curl -fsS https://tools.veracode.com/veracode-cli/install | sh
             ./veracode --help
             ls
-            ./veracode package -d -s -a 
+            ./veracode package -a -d -s . 
             ls
             
             
