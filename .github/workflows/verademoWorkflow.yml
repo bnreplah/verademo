@@ -65,7 +65,7 @@ env:
   
 jobs:
   build:
-    runs-on: ${{ github.event.inputs.Runner-Image }}
+    runs-on: '${{ github.event.inputs.Runner-Image }}'
     # grants permissions for the artifact to be uploaded
     permissions:
       contents: write
@@ -163,7 +163,7 @@ jobs:
   veracode-sast-analysis:
     # Requires the previous step to be completed prior to moving onto this step, otherwise can be set to run in parallel
     needs: build
-    runs-on: ${{ github.event.inputs.Runner-Image }}
+    runs-on: '${{ github.event.inputs.Runner-Image }}'
     steps:
       - uses: actions/checkout@v2
       - uses: actions/download-artifact@v2.0.10
