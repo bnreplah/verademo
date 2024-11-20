@@ -65,7 +65,7 @@ env:
   
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{github.event.inputs.Runner-Image}}
     # grants permissions for the artifact to be uploaded
     permissions:
       contents: write
