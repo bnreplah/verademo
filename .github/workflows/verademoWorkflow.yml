@@ -1,10 +1,6 @@
 name: Verademo Default Workflow - Maven Build and Scan MultiJob
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
   workflow_dispatch: 
       inputs:
           VeracodeCLI:
@@ -76,11 +72,12 @@ jobs:
     
     steps:
 
-      - run: | 
-          echo '${{ inputs.Runner-Image }}'
+      - name: check inputs
+        run: |
+          echo '${{ inputs.Runner-Image }}' 
           echo ${{ inputs.UsePM }}
        
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can acces it and clones the repo
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can acces it and clones the repo
       - uses: actions/checkout@v4.2.2
         with:
           repository: ${{ github.event.inputs.RepoUrl }}
