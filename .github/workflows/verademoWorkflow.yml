@@ -37,6 +37,11 @@ on:
             required: true
             type: 'boolean'
             default: 'true'
+          UsePM:
+            description: 'Install the CLI using the package managers'
+            required: true
+            type: 'boolean'
+            default: 'true'
           Runner-Image:
             description: 'Select the Runner Image'
             required: true
@@ -54,7 +59,7 @@ env:
   
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.inputs.Runner-Image }}
     # grants permissions for the artifact to be uploaded
     permissions:
       contents: write
@@ -72,8 +77,8 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
 
-      - name: Install the Veracode CLI
-        if: ${{ github.event.inputs.VeracodeCLI }}
+      - name: Install the Veracode CLI ( Ubuntu )
+        if: ${{ github.event.inputs.VeracodeCLI && ( github.event.inputs.Runner-Image == 'ubuntu-latest' ) }}
         run: |
             curl -fsS https://tools.veracode.com/veracode-cli/install | sh
             ./veracode --help
@@ -82,9 +87,43 @@ jobs:
             mkdir .veracode/build/ 
             ./veracode package -a -d -s . -o .veracode/build/
             ls
-            
-            
+
+      - name: Install the Veracode CLI ( windows ) 
+        if: ${{ github.event.inputs.VeracodeCLI && ( github.event.inputs.Runner-Image == 'windows-latest' ) && ( ! github.event.inputs.UsePM ) }}
+        run: |
+          Set-ExecutionPolicy AllSigned -Scope Process -Force
+          $ProgressPreference = "silentlyContinue"; iex ((New-Object System.Net.WebClient).DownloadString('https://tools.veracode.com/veracode-cli/install.ps1'))
+          veracode version
+          veracode help
+          veracode package -a -d -s . -o .veracode/build/
+
+      - name: Install the Veracode CLI ( windows ) 
+        if: ${{ github.event.inputs.VeracodeCLI && ( github.event.inputs.Runner-Image == 'windows-latest' ) && github.event.inputs.UsePM  }}
+        run: |
+          choco install veracode-cli
+          veracode version
+          veracode help
+          veracode package -a -d -s . -o .veracode/build/
           
+      - name: Install the Veracode CLI ( macOs ) 
+        if: ${{ github.event.inputs.VeracodeCLI && ( github.event.inputs.Runner-Image == 'macOs-latest' )  }}
+        run: |
+          brew install veracode/tap/veracode-cli
+          mkdir .veracode 
+          mkdir .veracode/build/ 
+          veracode version
+          veracode help
+          veracode package -a -d -s . -o .veracode/build/
+
+      - name: Install the Veracode CLI ( linux - no PM ) 
+        if: ${{ github.event.inputs.VeracodeCLI && ( !  github.event.inputs.Runner-Image == 'windows-latest' ) && ( ! github.event.inputs.UsePM ) }}
+        run: |
+          curl -fsS https://tools.veracode.com/veracode-cli/install | sh
+          ./veracode version
+          ./veracode --help
+          ls
+          
+        
       - name: Build with Maven
         if: ${{ ! github.event.inputs.VeracodeCLI }}
         run: |
@@ -110,7 +149,7 @@ jobs:
   veracode-sast-analysis:
     # Requires the previous step to be completed prior to moving onto this step, otherwise can be set to run in parallel
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.inputs.Runner-Image }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/download-artifact@v2.0.10
@@ -125,6 +164,7 @@ jobs:
           ls -la .veracode/build/
           
       - name: Veracode Pipeline-Scan
+        if: ${{ github.event.inputs.UseActions && github.event.inputs.Run-Pipeline-Scan }}
       # You may pin to the exact commit or the version.
       # uses: veracode/Veracode-pipeline-scan-action@7bbcef3efc8720d36302fc912a7d63f7aba34f76
         uses: veracode/Veracode-pipeline-scan-action@v1.0.14
@@ -195,6 +235,7 @@ jobs:
 
       
       - name: Veracode Upload And Scan
+        if: ${{ github.event.inputs.UseActions &&  github.event.inputs.Run-Upload-and-Scan }}
         # You may pin to the exact commit or the version.
         # uses: veracode/veracode-uploadandscan-action@35794dab9fbcd28fac19e44963f80646b27f4a7f
         uses: veracode/veracode-uploadandscan-action@0.2.4
@@ -251,6 +292,7 @@ jobs:
           touch input.json
           echo '{"name": "${{ vars.DAST_NAME}}", "scans": [{"scan_config_request": { "target_url": { "url": "${{vars.SCAN_URL}}" }}}],"schedule": {"duration": {"length": 1,"unit": "DAY"},"scheduled": true,"now": true }}' >> input.json
       - name: Create DAST Scan
+        if: ${{ github.event.inputs.Run-DAST-Scan }}
         run: |
           python --version
           python -m pip install --upgrade pip wheel
