@@ -107,6 +107,7 @@ jobs:
             mkdir .veracode/build/ 
             ./veracode package -a -d -s . -o .veracode/build/
             ls
+            ls .veracode/build/
 
       - name: Install the Veracode CLI ( windows ) 
         if: ${{ github.event.inputs.VeracodeCLI && ( github.event.inputs.Runner-Image == 'windows-latest' ) && ( ! github.event.inputs.UsePM ) }}
@@ -116,6 +117,8 @@ jobs:
           veracode version
           veracode help
           veracode package -a -d -s . -o .veracode/build/
+          ls
+          ls .veracode/build/
 
       - name: Install the Veracode CLI ( windows ) 
         if: ${{ github.event.inputs.VeracodeCLI && ( github.event.inputs.Runner-Image == 'windows-latest' ) && github.event.inputs.UsePM  }}
@@ -124,6 +127,8 @@ jobs:
           veracode version
           veracode help
           veracode package -a -d -s . -o .veracode/build/
+          ls
+          ls .veracode/build/
           
       - name: Install the Veracode CLI ( macOs ) 
         if: ${{ github.event.inputs.VeracodeCLI && ( github.event.inputs.Runner-Image == 'macOs-latest' ) && github.event.inputs.UsePM  }}
@@ -134,14 +139,20 @@ jobs:
           veracode version
           veracode help
           veracode package -a -d -s . -o .veracode/build/
+          ls
+          ls .veracode/build/
 
       - name: Install the Veracode CLI ( linux - no PM ) 
         if: ${{ github.event.inputs.VeracodeCLI && ( !  github.event.inputs.Runner-Image == 'windows-latest' ) && ( ! github.event.inputs.UsePM ) }}
         run: |
           curl -fsS https://tools.veracode.com/veracode-cli/install | sh
+          mkdir .veracode 
+          mkdir .veracode/build/ 
           ./veracode version
           ./veracode --help
+          ./veracode package -a -d -s . -o .veracode/build/
           ls
+          ls .veracode/build/
           
         
       - name: Build with Maven
@@ -154,6 +165,41 @@ jobs:
           ls target/
           mv target/*.war -t .veracode/build/
           ls .veracode/build/
+      
+      - name: Veracode Dependency Scanning
+        if: ${{ inputs.Run-SCA-Agent-Based-Scan }}
+        env:
+          SRCCLR_API_TOKEN: ${{secrets.SRCCLR_API_TOKEN}}
+        # You may pin to the exact commit or the version.
+        # uses: veracode/veracode-sca@6f565b462af9b5e74d2dbbdddcb5cacd7bc7fe4f
+        uses: veracode/veracode-sca@v2.1.11
+        with:
+          # Authorization token to query and create issues
+          github_token: ${{ github.token }}
+          # Run the SRCCLR with the `--quick` options
+          quick: false # optional, default is false
+          # Show update advisor
+          update_advisor: true # optional, default is false
+          # A git URL to work with in case the scan is not for the current repository
+          #url: # optional, default is 
+          # An attribute to instruct the action to create an issue from found vulnerability or just simple text output
+          create-issues: true # optional, default is false
+          # A path within the repository where the build definition starts
+          path: . # optional, default is .
+          # Run the SRCCLR in debug mode
+          debug: true # optional, default is false
+          # Run the SRCCLR with the `--skip-collectors` options
+          #skip-collectors: # optional, default is false
+          # Run the SRCCLR with the `--allow-dirty` option
+          allow-dirty: true # optional, default is false
+          # Run the SRCCLR with the `--recursive` option
+          recursive: true # optional, default is false
+          # Run the SRCCLR with the `--skip-vms` option
+          #skip-vms: # optional, default is false
+          # Run the SRCCLR with the `--no-graphs` option
+          #no-graphs: # optional, default is false
+                
+
           
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4.4.3
