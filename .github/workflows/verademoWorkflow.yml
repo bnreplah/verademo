@@ -55,7 +55,7 @@ on:
             description: "Repo to Clone for the pipeline"
             required: false
             type: 'string'
-            default: 'veracode/verademo'
+            default: '${{ github.repository }}'
 env:
   SRCCLR_API_TOKEN: ${{secrets.SRCCLR_API_TOKEN}}
   VERACODE_API_KEY_ID: ${{secrets.VERACODE_API_ID}}
@@ -168,13 +168,18 @@ jobs:
     needs: build
     runs-on: '${{ github.event.inputs.Runner-Image }}'
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/download-artifact@v2.0.10
+      - uses: actions/checkout@v4.2.2
+        with:
+          repository: ${{ inputs.RepoUrl }}
+           
+      - uses: actions/download-artifact@v4.1.8
+        continue-on-error: true
         with: 
-          name: verademo-artifact
-          path: .veracode/build/
-          merge-multiple: name
-          
+            name: verademo-artifact
+            path: .veracode/build/
+            merge-multiple: true
+            repository: ${{inputs.RepoUrl}}
+            
       - run: pwd
       - run: |
           ls -la
