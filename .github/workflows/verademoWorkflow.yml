@@ -54,11 +54,11 @@ on:
           Veracode-App-Name:
             description: "Veracode App Profile Name"
             required: false
-            default: '${{ github.repository }}'
+            default: ${{ github.repository }}
           RepoUrl:
             description: "Repo to Clone for the pipeline"
             required: false
-            default: '${{ github.repository }}'
+            default: ${{ github.repository }}
             
 env:
   SRCCLR_API_TOKEN: ${{secrets.SRCCLR_API_TOKEN}}
