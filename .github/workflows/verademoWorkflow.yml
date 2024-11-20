@@ -55,14 +55,10 @@ on:
             description: "Veracode App Profile Name"
             required: false
             default: '${{ github.repository }}'
-          Veracode-API-ID:
-            description: "Veracode API ID to use"
+          RepoUrl:
+            description: "Repo to Clone for the pipeline"
             required: false
-            default: '${{ secrets.VERACODE_API_ID }}'
-          Veracode-API-Key:
-            description: "Veracode API Key to use"
-            required: false
-            default: '${{ secrets.VERACODE_API_KEY }}'
+            default: '${{ github.repository }}'
             
 env:
   SRCCLR_API_TOKEN: ${{secrets.SRCCLR_API_TOKEN}}
@@ -81,8 +77,16 @@ jobs:
     steps:
     
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can acces it and clones the repo
-      - uses: actions/checkout@v3
-      
+      - uses: actions/checkout@v4.2.2
+        with:
+          repository: ${{ github.event.inputs.RepoUrl }}
+
+
+      # Need to run a step here that checks for the package managers needed in the file system and then installs them appropirately
+      # Later itteration need to do this with an image
+
+
+        
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
