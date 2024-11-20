@@ -1,3 +1,6 @@
+> Note: This version of verademo has various integration examples. Not all of them are kept up to date, but are merely a proof of concept to help get started with the integrations.
+
+
 # VeraDemo - Blab-a-Gag
 
 ### :information_source: Notice
