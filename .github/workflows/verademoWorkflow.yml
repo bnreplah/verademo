@@ -51,11 +51,12 @@ on:
             description: "Veracode App Profile Name"
             required: false
             type: 'string'
+            default: 'Verademo'
           RepoUrl:
             description: "Repo to Clone for the pipeline"
             required: false
             type: 'string'
-            default: 'veracode/verademo'
+            default: 'bnreplah/verademo'
 env:
   SRCCLR_API_TOKEN: ${{secrets.SRCCLR_API_TOKEN}}
   VERACODE_API_KEY_ID: ${{secrets.VERACODE_API_ID}}
