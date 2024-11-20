@@ -167,6 +167,7 @@ jobs:
           ls .veracode/build/
       
       - name: Veracode Dependency Scanning
+        continue-on-error: ${{ env.CONTINUE_ON_ERROR }}
         if: ${{ inputs.Run-SCA-Agent-Based-Scan }}
         env:
           SRCCLR_API_TOKEN: ${{secrets.SRCCLR_API_TOKEN}}
@@ -260,6 +261,7 @@ jobs:
       # Downloads the pipeline scanner jar directly for each of the operating systems and settings defined
 
       - name: Veracode Pipeline Scan ( Java Wrapper ) [Windows no PM]
+        continue-on-error: ${{ env.CONTINUE_ON_ERROR }}
         if: ${{ ( ! env.OVER_LIMIT ) && ( ! github.event.inputs.UseActions ) &&  ( github.event.inputs.Runner-Image == 'windows-latest' ) && github.event.inputs.Run-Pipeline-Scan  && ( ! github.event.inputs.UsePM ) }}
         run: |
           wget https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
@@ -269,6 +271,7 @@ jobs:
 
       # Installs the Veracode CLI fro the one that uses a package manager
       - name: Veracode Pipeline Scan ( Java Wrapper ) [Windows PM]
+        continue-on-error: ${{ env.CONTINUE_ON_ERROR }}
         if: ${{ ( ! env.OVER_LIMIT ) && ( ! github.event.inputs.UseActions ) &&  ( github.event.inputs.Runner-Image == 'windows-latest' ) && github.event.inputs.Run-Pipeline-Scan  &&  github.event.inputs.UsePM  }}
         run: |
           choco install veracode-cli
@@ -277,6 +280,7 @@ jobs:
           
       
       - name: Veracode Pipeline Scan ( Java Wrapper ) [Ubuntu no PM]
+        continue-on-error: ${{ env.CONTINUE_ON_ERROR }}
         if: ${{ ( ! env.OVER_LIMIT ) && ( ! github.event.inputs.UseActions ) &&  ( github.event.inputs.Runner-Image == 'ubuntu-latest' ) && github.event.inputs.Run-Pipeline-Scan  }}
         run: |
           curl -sSO https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
@@ -286,6 +290,7 @@ jobs:
 
           
       - name: Veracode Pipeline Scan ( Java Wrapper ) [MacOs PM]
+        continue-on-error: ${{ env.CONTINUE_ON_ERROR }}
         if: ${{ ( ! env.OVER_LIMIT ) && ( ! github.event.inputs.UseActions ) &&  ( github.event.inputs.Runner-Image == 'macOs-latest' ) && github.event.inputs.Run-Pipeline-Scan  &&  github.event.inputs.UsePM  }}
         run: |
           brew install veracode/tap/veracode-cli
@@ -294,6 +299,7 @@ jobs:
 
 
       - name: Veracode Pipeline Scan ( Java Wrapper ) [MacOs no PM]
+        continue-on-error: ${{ env.CONTINUE_ON_ERROR }}
         if: ${{ ( ! env.OVER_LIMIT ) && ( ! github.event.inputs.UseActions ) &&  ( github.event.inputs.Runner-Image == 'macOs-latest' ) && github.event.inputs.Run-Pipeline-Scan  && ( ! github.event.inputs.UsePM ) }}
         run: |
           curl -sSO https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
@@ -305,6 +311,7 @@ jobs:
           
           
       - name: Veracode Pipeline-Scan
+        continue-on-error: ${{ env.CONTINUE_ON_ERROR }}
         if: ${{ ( ! env.OVER_LIMIT ) && github.event.inputs.UseActions && github.event.inputs.Run-Pipeline-Scan }}
       # You may pin to the exact commit or the version.
       # uses: veracode/Veracode-pipeline-scan-action@7bbcef3efc8720d36302fc912a7d63f7aba34f76
@@ -374,6 +381,7 @@ jobs:
             # include: # optional
               
       - name: Veracode Upload and Scan ( Java API Wrapper ) [windows]
+        continue-on-error: ${{ env.CONTINUE_ON_ERROR }}
         if: ${{  ( ! github.event.inputs.UseActions ) &&  ( github.event.inputs.Runner-Image == 'windows-latest' ) && github.event.inputs.Run-Upload-and-Scan }}
         run: |
           ﻿Write-Output "Downloading the latest version of the Veracode Java API"
@@ -408,6 +416,7 @@ jobs:
           
 
       - name: Veracode Upload and Scan ( Java API Wrapper ) [ubuntu]
+        continue-on-error: ${{ env.CONTINUE_ON_ERROR }}
         if: ${{  ( ! github.event.inputs.UseActions ) &&  ( github.event.inputs.Runner-Image == 'ubuntu-latest' ) && github.event.inputs.Run-Upload-and-Scan }}
         run: |
             echo "Downloading the latest version of the Veracode Java API Wrapper"
@@ -425,6 +434,7 @@ jobs:
             
 
       - name: Veracode Upload and Scan ( Java API Wrapper ) [macOs]
+        continue-on-error: ${{ env.CONTINUE_ON_ERROR }}
         if: ${{  ( ! github.event.inputs.UseActions ) &&  ( github.event.inputs.Runner-Image == 'macOs-latest' ) && github.event.inputs.Run-Upload-and-Scan }}
         run: |
             echo "Downloading the latest version of the Veracode Java API Wrapper"
@@ -440,6 +450,7 @@ jobs:
             java -jar VeracodeJavaAPI.jar -action uploadandscan -filepath .veracode/build/ -appname '${{ github.event.inputs.Veracode-App-Name }}' -createprofile true1 -version '${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}' -deleteincompletescan 2
         
       - name: Veracode Upload And Scan
+        continue-on-error: ${{ env.CONTINUE_ON_ERROR }}
         if: ${{ github.event.inputs.UseActions &&  github.event.inputs.Run-Upload-and-Scan }}
         # You may pin to the exact commit or the version.
         # uses: veracode/veracode-uploadandscan-action@35794dab9fbcd28fac19e44963f80646b27f4a7f
@@ -497,6 +508,7 @@ jobs:
           touch input.json
           echo '{"name": "${{ vars.DAST_NAME}}", "scans": [{"scan_config_request": { "target_url": { "url": "${{vars.SCAN_URL}}" }}}],"schedule": {"duration": {"length": 1,"unit": "DAY"},"scheduled": true,"now": true }}' >> input.json
       - name: Create DAST Scan
+        continue-on-error: ${{ env.CONTINUE_ON_ERROR }}
         if: ${{ github.event.inputs.Run-DAST-Scan }}
         run: |
           python --version
