@@ -1,0 +1,87 @@
+#!/bin/bash
+
+allowed_files=()
+excluded_files=()
+
+
+##################################################################################
+# Installing the Veracode Java API Wrapper
+##################################################################################
+echo "Downloading the latest version of the Veracode Java API Wrapper"
+WRAPPER_VERSION=`curl https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/maven-metadata.xml | grep latest |  cut -d '>' -f 2 | cut -d '<' -f 1`
+if `wget https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/$WRAPPER_VERSION/vosp-api-wrappers-java-$WRAPPER_VERSION.jar -O VeracodeJavaAPI.jar`; then
+      chmod 755 VeracodeJavaAPI.jar
+      echo '[INFO] SUCCESSFULLY DOWNLOADED WRAPPER'
+else
+      echo '[ERROR] DOWNLOAD FAILED'
+      exit 1
+fi
+
+fileLocation=".veracode/build/" # places the built artifacts in the veracode build folder 
+appname="Verademo" # Create a script to read this from a file or from the project
+scanname=`date '+%F_%H:%M:%S'`
+
+java -jar VeracodeJavaAPI.jar -action getapplist >> applist.txt
+appid=$(cat applist.txt | grep -E \"$appname\" | cut -d '"' -f2) 
+
+# Create this to be read from a file
+
+# ##################################################################################
+# #  Installing the Veracode Pipeline Scanner
+# ##################################################################################
+# # This is optional since it is installed in the veracode cli
+
+# echo "Downloading the latest version of the Veracode Pipeline Scanner"
+# curl https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip --output pipeline-scan-LATEST.zip --silent
+# unzip pipeline-scan-LATEST.zip pipeline-scan.jar
+
+
+##################################################################################
+# Installing the Veracode CLI
+##################################################################################
+
+curl -fsS https://tools.veracode.com/veracode-cli/install | sh
+./veracode version
+
+./veracode package -a -s ./ -d -o "$fileLocation"
+# Load all filenames into an array
+file_array=($(ls $fileLocation ))
+
+# Loop over the array and process each file
+for file in "${file_array[@]}"; do
+    echo "Processing file: $file"
+        
+    # This may no longer be relevant since the file location is now a directory
+    if [[ -z "$fileLocation/$file" ]]; then
+        echo "No File has been passed/unsupported file"
+    fi
+    
+
+    # Add checks here to see if of the supported artifact types
+     # Check if the file has one of the allowed extensions
+    if [[ "$file" =~ \.(war|ear|jar|zip)$ ]]; then
+            allowed_files+=("$file")  # Add to allowed array
+    else
+            excluded_files+=("$file")  # Add to excluded array
+    fi
+    echo $(stat --format=%s $fileLocation/$file)
+    
+done
+
+# You can have it fail base on criteria here to then gate 
+
+if [[ $(stat --format=%s $fileLocation) -le 20000 ]]; then
+     for file in "${allowed_files[@]}"; do 
+        java -jar pipeline-scan.jar --file $fileLocation/$file
+    done
+else
+    java -jar VeracodeAPI.jar -action uploadandscan -filepath $fileLocation/ -appname $appname -createprofile false -version $scanname -deleteincompletescan 1
+fi
+# Output the results
+echo "Allowed files:"
+printf '%s\n' "${allowed_files[@]}"
+
+echo "Excluded files:"
+printf '%s\n' "${excluded_files[@]}"
+
+
