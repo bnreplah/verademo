@@ -167,13 +167,13 @@ jobs:
       - name: Build with Maven
         if: ${{ !  ( github.event.inputs.VeracodeCLI == 'true' ) }}
         run: |
-          cd app/
-          mvn -B clean package --file pom.xml
           mkdir .veracode 
           mkdir .veracode/build/ 
+          cd app/
+          mvn -B clean package --file pom.xml
           ls target/
-          mv target/*.war -t .veracode/build/
-          ls .veracode/build/
+          mv target/*.war -t ../.veracode/build/
+          ls ../.veracode/build/
       
       - name: Veracode Dependency Scanning
         continue-on-error: true
