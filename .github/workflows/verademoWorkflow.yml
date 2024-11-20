@@ -32,6 +32,20 @@ on:
             required: true
             type: 'boolean'
             default: 'true'
+          Run-DAST-Scan:
+            description: 'Run the DAST Scan'
+            required: true
+            type: 'boolean'
+            default: 'true'
+          Runner-Image:
+            description: 'Select the Runner Image'
+            required: true
+            type: 'choice'
+            default: 'ubuntu-latest'
+            options:
+                - 'ubuntu-latest'
+                - 'macOs-latest'
+                - 'windows-latest'
             
 env:
   SRCCLR_API_TOKEN: ${{secrets.SRCCLR_API_TOKEN}}
