@@ -60,6 +60,9 @@ env:
   SRCCLR_API_TOKEN: ${{secrets.SRCCLR_API_TOKEN}}
   VERACODE_API_KEY_ID: ${{secrets.VERACODE_API_ID}}
   VERACODE_API_KEY_SECRET: ${{secrets.VERACODE_API_KEY}}
+  CONTINUE_ON_ERROR: false
+  OVER_LIMIT_DEFAULT: true
+  
   
 jobs:
   build:
@@ -180,15 +183,38 @@ jobs:
             merge-multiple: true
             repository: ${{inputs.RepoUrl}}
             
+            
       - run: pwd
       - run: |
           ls -la
           ls -la .veracode/build/
-
+          fileLocation=".veracode/build/" # places the built artifacts in the veracode build folder 
+          file_array=($(ls $fileLocation ))
+          for file in "${file_array[@]}"; do
+              echo "Processing file: $file"
+                  
+             
+              if [[ -z "$fileLocation/$file" ]]; then
+                  echo "No File has been passed/unsupported file"
+              fi
+              
+              if [[ "$file" =~ \.(war|ear|jar|zip)$ ]]; then
+                      allowed_files+=("$file")  
+              else
+                      excluded_files+=("$file")  
+              fi
+              echo $(stat --format=%s $fileLocation/$file)
+              
+          done
+          if [[ $(stat --format=%s $fileLocation) -le 20000 ]]; then
+              echo "OVER_LIMIT=false" >> $GITHUB_ENV
+          else
+              echo "OVER_LIMIT=${{env.OVER_LIMIT_DEFAULT}}" >> $GITHUB_ENV
+          fi
       # Downloads the pipeline scanner jar directly for each of the operating systems and settings defined
 
       - name: Veracode Pipeline Scan ( Java Wrapper ) [Windows no PM]
-        if: ${{  ( ! github.event.inputs.UseActions ) &&  ( github.event.inputs.Runner-Image == 'windows-latest' ) && github.event.inputs.Run-Pipeline-Scan  && ( ! github.event.inputs.UsePM ) }}
+        if: ${{ ( ! env.OVER_LIMIT ) && ( ! github.event.inputs.UseActions ) &&  ( github.event.inputs.Runner-Image == 'windows-latest' ) && github.event.inputs.Run-Pipeline-Scan  && ( ! github.event.inputs.UsePM ) }}
         run: |
           wget https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
           Expand-Archive -Path pipeline-scan-LATEST.zip -DestinationPath ./ -Force
@@ -197,7 +223,7 @@ jobs:
 
       # Installs the Veracode CLI fro the one that uses a package manager
       - name: Veracode Pipeline Scan ( Java Wrapper ) [Windows PM]
-        if: ${{  ( ! github.event.inputs.UseActions ) &&  ( github.event.inputs.Runner-Image == 'windows-latest' ) && github.event.inputs.Run-Pipeline-Scan  &&  github.event.inputs.UsePM  }}
+        if: ${{ ( ! env.OVER_LIMIT ) && ( ! github.event.inputs.UseActions ) &&  ( github.event.inputs.Runner-Image == 'windows-latest' ) && github.event.inputs.Run-Pipeline-Scan  &&  github.event.inputs.UsePM  }}
         run: |
           choco install veracode-cli
           veracode version
@@ -205,7 +231,7 @@ jobs:
           
       
       - name: Veracode Pipeline Scan ( Java Wrapper ) [Ubuntu no PM]
-        if: ${{  ( ! github.event.inputs.UseActions ) &&  ( github.event.inputs.Runner-Image == 'ubuntu-latest' ) && github.event.inputs.Run-Pipeline-Scan  }}
+        if: ${{ ( ! env.OVER_LIMIT ) && ( ! github.event.inputs.UseActions ) &&  ( github.event.inputs.Runner-Image == 'ubuntu-latest' ) && github.event.inputs.Run-Pipeline-Scan  }}
         run: |
           curl -sSO https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
           unzip -o pipeline-scan-LATEST.zip
@@ -214,7 +240,7 @@ jobs:
 
           
       - name: Veracode Pipeline Scan ( Java Wrapper ) [MacOs PM]
-        if: ${{  ( ! github.event.inputs.UseActions ) &&  ( github.event.inputs.Runner-Image == 'macOs-latest' ) && github.event.inputs.Run-Pipeline-Scan  &&  github.event.inputs.UsePM  }}
+        if: ${{ ( ! env.OVER_LIMIT ) && ( ! github.event.inputs.UseActions ) &&  ( github.event.inputs.Runner-Image == 'macOs-latest' ) && github.event.inputs.Run-Pipeline-Scan  &&  github.event.inputs.UsePM  }}
         run: |
           brew install veracode/tap/veracode-cli
           veracode version
@@ -222,7 +248,7 @@ jobs:
 
 
       - name: Veracode Pipeline Scan ( Java Wrapper ) [MacOs no PM]
-        if: ${{  ( ! github.event.inputs.UseActions ) &&  ( github.event.inputs.Runner-Image == 'macOs-latest' ) && github.event.inputs.Run-Pipeline-Scan  && ( ! github.event.inputs.UsePM ) }}
+        if: ${{ ( ! env.OVER_LIMIT ) && ( ! github.event.inputs.UseActions ) &&  ( github.event.inputs.Runner-Image == 'macOs-latest' ) && github.event.inputs.Run-Pipeline-Scan  && ( ! github.event.inputs.UsePM ) }}
         run: |
           curl -sSO https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
           unzip -o pipeline-scan-LATEST.zip
@@ -233,7 +259,7 @@ jobs:
           
           
       - name: Veracode Pipeline-Scan
-        if: ${{ github.event.inputs.UseActions && github.event.inputs.Run-Pipeline-Scan }}
+        if: ${{ ( ! env.OVER_LIMIT ) && github.event.inputs.UseActions && github.event.inputs.Run-Pipeline-Scan }}
       # You may pin to the exact commit or the version.
       # uses: veracode/Veracode-pipeline-scan-action@7bbcef3efc8720d36302fc912a7d63f7aba34f76
         uses: veracode/Veracode-pipeline-scan-action@v1.0.14
