@@ -55,7 +55,7 @@ on:
             description: "Repo to Clone for the pipeline"
             required: false
             type: 'string'
-            default: '${{ github.repository }}'
+            default: 'veracode/verademo'
 env:
   SRCCLR_API_TOKEN: ${{secrets.SRCCLR_API_TOKEN}}
   VERACODE_API_KEY_ID: ${{secrets.VERACODE_API_ID}}
