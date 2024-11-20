@@ -1,5 +1,6 @@
 > Note: This version of verademo has various integration examples. Not all of them are kept up to date, but are merely a proof of concept to help get started with the integrations.
 
+> Due to the nature of github already using the commit hooks in the underlying communication, the `.git/` folder is reserved in github. The git hooks examples can be found in the `.gitl` folder instead.
 
 # VeraDemo - Blab-a-Gag
 
