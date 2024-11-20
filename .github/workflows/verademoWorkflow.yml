@@ -77,8 +77,17 @@ jobs:
 
       - name: check inputs
         run: |
-          echo '${{ inputs.Runner-Image }}' 
-          echo ${{ inputs.UsePM }}
+          echo ${{ inputs.VeracodeCLI }}
+          echo ${{ inputs.UseActions }}
+          echo ${{inputs.Run-Pipeline-Scan }}
+          echo ${{inputs.Run-Upload-and-Scan }}
+          echo ${{inputs.Run-SCA-Agent-Based-Scan }}
+          echo ${{inputs.Run-DAST-Scan }}
+          echo ${{inputs.UsePM}}
+          echo ${{ inputs.Runner-Image }}
+          echo ${{ inputs.Veracode-App-Name}}
+          echo ${{ inputs.RepoUrl}}
+          
        
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can acces it and clones the repo
       - uses: actions/checkout@v4.2.2
@@ -98,7 +107,7 @@ jobs:
           distribution: 'adopt'
 
       - name: Install the Veracode CLI ( Ubuntu )
-        if: ${{ github.event.inputs.VeracodeCLI && ( github.event.inputs.Runner-Image == 'ubuntu-latest' ) }}
+        if: ${{ ( github.event.inputs.VeracodeCLI == 'true' ) && ( github.event.inputs.Runner-Image == 'ubuntu-latest' ) }}
         run: |
             curl -fsS https://tools.veracode.com/veracode-cli/install | sh
             ./veracode --help
@@ -110,7 +119,7 @@ jobs:
             ls .veracode/build/
 
       - name: Install the Veracode CLI ( windows ) 
-        if: ${{ github.event.inputs.VeracodeCLI && ( github.event.inputs.Runner-Image == 'windows-latest' ) && ( ! github.event.inputs.UsePM ) }}
+        if: ${{ ( github.event.inputs.VeracodeCLI == 'true' ) && ( github.event.inputs.Runner-Image == 'windows-latest' ) && ! ( github.event.inputs.UsePM == 'true' ) }}
         run: |
           Set-ExecutionPolicy AllSigned -Scope Process -Force
           $ProgressPreference = "silentlyContinue"; iex ((New-Object System.Net.WebClient).DownloadString('https://tools.veracode.com/veracode-cli/install.ps1'))
@@ -121,7 +130,7 @@ jobs:
           ls .veracode/build/
 
       - name: Install the Veracode CLI ( windows ) 
-        if: ${{ github.event.inputs.VeracodeCLI && ( github.event.inputs.Runner-Image == 'windows-latest' ) && github.event.inputs.UsePM  }}
+        if: ${{ ( github.event.inputs.VeracodeCLI == 'true' ) && ( github.event.inputs.Runner-Image == 'windows-latest' ) && ( github.event.inputs.UsePM == 'true' )  }}
         run: |
           choco install veracode-cli
           veracode version
@@ -131,7 +140,7 @@ jobs:
           ls .veracode/build/
           
       - name: Install the Veracode CLI ( macOs ) 
-        if: ${{ github.event.inputs.VeracodeCLI && ( github.event.inputs.Runner-Image == 'macOs-latest' ) && github.event.inputs.UsePM  }}
+        if: ${{ ( github.event.inputs.VeracodeCLI == 'true' ) && ( github.event.inputs.Runner-Image == 'macOs-latest' ) && ( github.event.inputs.UsePM == 'true' )  }}
         run: |
           brew install veracode/tap/veracode-cli
           mkdir .veracode 
@@ -143,7 +152,7 @@ jobs:
           ls .veracode/build/
 
       - name: Install the Veracode CLI ( linux - no PM ) 
-        if: ${{ github.event.inputs.VeracodeCLI && ( !  github.event.inputs.Runner-Image == 'windows-latest' ) && ( ! github.event.inputs.UsePM ) }}
+        if: ${{ ( github.event.inputs.VeracodeCLI == 'true' ) && ( !  github.event.inputs.Runner-Image == 'windows-latest' ) && ! ( github.event.inputs.UsePM == 'true' ) }}
         run: |
           curl -fsS https://tools.veracode.com/veracode-cli/install | sh
           mkdir .veracode 
@@ -156,7 +165,7 @@ jobs:
           
         
       - name: Build with Maven
-        if: ${{ ! github.event.inputs.VeracodeCLI }}
+        if: ${{ !  ( github.event.inputs.VeracodeCLI == 'true' ) }}
         run: |
           cd app/
           mvn -B clean package --file pom.xml
@@ -168,7 +177,7 @@ jobs:
       
       - name: Veracode Dependency Scanning
         continue-on-error: true
-        if: ${{ inputs.Run-SCA-Agent-Based-Scan }}
+        if: ${{ inputs.Run-SCA-Agent-Based-Scan == 'true' }}
         env:
           SRCCLR_API_TOKEN: ${{secrets.SRCCLR_API_TOKEN}}
         # You may pin to the exact commit or the version.
