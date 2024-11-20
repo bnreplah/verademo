@@ -358,7 +358,7 @@ jobs:
               Copy-Item -Path ./java-wrapper-$version/VeracodeJavaAPI.jar -Destination ./ -Force
           }
           ls
-          java -jar VeracodeJavaAPI.jar -action uploadandscan -filepath .veracode/build/ -appname '${{ github.event.inputs.Veracode-App-Name }}' -createprofile true1 -version '${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}' -deleteincompletescan 
+          java -jar VeracodeJavaAPI.jar -action uploadandscan -filepath .veracode/build/ -appname '${{ github.event.inputs.Veracode-App-Name }}' -createprofile true1 -version '${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}' -deleteincompletescan 2
           
 
       - name: Veracode Upload and Scan ( Java API Wrapper ) [ubuntu]
@@ -374,7 +374,7 @@ jobs:
                 exit 1
             fi
             ls
-            java -jar VeracodeJavaAPI.jar -action uploadandscan -filepath .veracode/build/ -appname '${{ github.event.inputs.Veracode-App-Name }}' -createprofile true1 -version '${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}' -deleteincompletescan 
+            java -jar VeracodeJavaAPI.jar -action uploadandscan -filepath .veracode/build/ -appname '${{ github.event.inputs.Veracode-App-Name }}' -createprofile true1 -version '${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}' -deleteincompletescan 2
             
             
 
@@ -391,7 +391,7 @@ jobs:
                 exit 1
             fi
             ls
-            java -jar VeracodeJavaAPI.jar -action uploadandscan -filepath .veracode/build/ -appname '${{ github.event.inputs.Veracode-App-Name }}' -createprofile true1 -version '${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}' -deleteincompletescan 
+            java -jar VeracodeJavaAPI.jar -action uploadandscan -filepath .veracode/build/ -appname '${{ github.event.inputs.Veracode-App-Name }}' -createprofile true1 -version '${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}' -deleteincompletescan 2
         
       - name: Veracode Upload And Scan
         if: ${{ github.event.inputs.UseActions &&  github.event.inputs.Run-Upload-and-Scan }}
@@ -440,7 +440,7 @@ jobs:
           # teams
           #toplevel: # optional
           # automatically delete the current scan if there are any errors when uploading files or starting the scan
-          deleteincompletescan: 1 # optional
+          deleteincompletescan: 2 # optional
           # specify version of the Java API Wrapper; default is latest
           #javawrapperversion: # optional
           # show detailed diagnostic information, which you can use for debugging, in the output.
