@@ -77,10 +77,10 @@ jobs:
 
       - name: check inputs
         run: |
-          echo ${{ inputs.VeracodeCLI }}
-          echo ${{ inputs.UseActions }}
-          echo ${{inputs.Run-Pipeline-Scan }}
-          echo ${{inputs.Run-Upload-and-Scan }}
+          echo "Veracode CLI" ${{ inputs.VeracodeCLI }}
+          echo "UseActions" ${{ inputs.UseActions }}
+          echo "Run-Pipeline-Scan:" ${{inputs.Run-Pipeline-Scan }}
+          echo "Run-Upload-and-Scan:" ${{inputs.Run-Upload-and-Scan }}
           echo ${{inputs.Run-SCA-Agent-Based-Scan }}
           echo ${{inputs.Run-DAST-Scan }}
           echo ${{inputs.UsePM}}
