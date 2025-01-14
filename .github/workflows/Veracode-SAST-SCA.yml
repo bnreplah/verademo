@@ -36,7 +36,7 @@ jobs:
           touch results.json
           touch filtered_results.json
       - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v2.2.4
+        uses: actions/upload-artifact@v4.6.0
         with:
             # Artifact name
             name: verademo-artifact
@@ -106,7 +106,7 @@ jobs:
           project_url: https://github.com/bnreplah/verademo # optional
           # Enter the source control reference, revision, or branch for the CI/CD code repository that runs a Pipeline Scan.
           project_ref: main # optional
-          # Enter the [application profile](https://docs.veracode.com/r/request_profile) ID for the application you want to upload and scan.
+          # Enter the [application profile](https://docs.veracode.com/r/request_profile) ID for the application you want to  and scan.
           #app_id: # optional
           # Enter one these values, which are case-sensitive, for the type of development stage: Development, Testing, Release.
           #development_stage: # optional
@@ -121,11 +121,11 @@ jobs:
           # Fail the build upon findings. Takes true or false
           fail_build: false # optional
 
-      - name: Veracode Upload And Scan
+      - name: Veracode  And Scan
         continue-on-error: true
         # You may pin to the exact commit or the version.
-        # uses: veracode/veracode-uploadandscan-action@98e2a2941b985e55bfe469ebcb970b2e686625e4
-        uses: veracode/veracode-uploadandscan-action@0.2.6
+        # uses: veracode/veracode-andscan-action@98e2a2941b985e55bfe469ebcb970b2e686625e4
+        uses: veracode/veracode-andscan-action@0.2.6
         with:
           # appname
           appname: ${{ github.repository }}
@@ -201,7 +201,7 @@ jobs:
           
       - name: Upload a Build Artifact
         continue-on-error: true
-        uses: actions/upload-artifact@v3.1.1
+        uses: actions/upload-artifact@v4.6.0
         with:
           # Artifact name
           name: veracode-results-sarif # optional, default is artifact
