@@ -7,32 +7,32 @@ on:
             description: 'Package Using Veracode CLI'
             required: true
             type: 'boolean'
-            default: 'true'
+            default: true
           UseActions:
             description: 'Use the Veracode Actions'
             required: true
             type: 'boolean'
-            default: 'true'
+            default: true
           Run-Pipeline-Scan:
             description: 'Run the Pipeline scan'
             required: true
             type: 'boolean'
-            default: 'true'
+            default: true
           Run-Upload-and-Scan:
             description: 'Run the Upload and Scan'
             required: true
             type: 'boolean'
-            default: 'true'
+            default: true
           Run-SCA-Agent-Based-Scan:
             description: 'Run the SCA Agent Based Scan'
             required: true
             type: 'boolean'
-            default: 'true'
+            default: true
           Run-DAST-Scan:
             description: 'Run the DAST Scan'
             required: true
             type: 'boolean'
-            default: 'true'
+            default: true
           UsePM:
             description: 'Install the CLI using the package managers'
             required: true
@@ -57,12 +57,18 @@ on:
             required: false
             type: 'string'
             default: 'bnreplah/verademo'
+          ScanDir:
+            description: "The directory where the build is located"
+            required: false
+            type: 'string'
+            default: '.'
 env:
   SRCCLR_API_TOKEN: ${{secrets.SRCCLR_API_TOKEN}}
   VERACODE_API_KEY_ID: ${{secrets.VERACODE_API_ID}}
   VERACODE_API_KEY_SECRET: ${{secrets.VERACODE_API_KEY}}
   OVER_LIMIT_DEFAULT: true
-  
+permissions:
+          security-events: write
   
 jobs:
   build:
@@ -215,7 +221,7 @@ jobs:
         uses: actions/upload-artifact@v4.4.3
         with:
             # Artifact name
-            name: verademo-artifact
+            name: veracode-build-artifact
             # optional, default is artifact
             # A file, directory or wildcard pattern that describes what to upload
             path: .veracode/build/
@@ -234,13 +240,13 @@ jobs:
       - uses: actions/download-artifact@v4.1.8
         continue-on-error: true
         with: 
-            name: verademo-artifact
+            name: veracode-build-artifact
             path: .veracode/build/
             merge-multiple: true
             repository: ${{inputs.RepoUrl}}
             
             
-      - run: pwd
+      - run: pwd && ls
       - run: |
           ls -la
           ls -la .veracode/build/
@@ -277,6 +283,7 @@ jobs:
           Expand-Archive -Path pipeline-scan-LATEST.zip -DestinationPath ./ -Force
           ls
           java -jar pipeline-scan.jar
+          java -jar pipeline-scan.jar --file ${{ github.event.inputs.ScanDir }}
 
       # Installs the Veracode CLI fro the one that uses a package manager
       - name: Veracode Pipeline Scan ( Java Wrapper ) [Windows PM]
@@ -286,6 +293,7 @@ jobs:
           choco install veracode-cli
           veracode version
           veracode static scan --help
+          veracode static scan ${{ github.event.inputs.ScanDir }}
           
       
       - name: Veracode Pipeline Scan ( Java Wrapper ) [Ubuntu no PM]
@@ -296,6 +304,7 @@ jobs:
           unzip -o pipeline-scan-LATEST.zip
           ls -la
           java -jar pipeline-scan.jar
+          java -jar pipeline-scan.jar --file ${{ github.event.inputs.ScanDir }}
 
           
       - name: Veracode Pipeline Scan ( Java Wrapper ) [MacOs PM]
@@ -305,6 +314,7 @@ jobs:
           brew install veracode/tap/veracode-cli
           veracode version
           veracode static scan --help
+          veracode static scan ${{ github.event.inputs.ScanDir }}
 
 
       - name: Veracode Pipeline Scan ( Java Wrapper ) [MacOs no PM]
@@ -315,8 +325,9 @@ jobs:
           unzip -o pipeline-scan-LATEST.zip
           ls -la
           java -jar pipeline-scan.jar
+          java -jar pipeline-scan.jar --file ${{ github.event.inputs.ScanDir }}
       
-      
+    
           
           
       - name: Veracode Pipeline-Scan
@@ -512,6 +523,81 @@ jobs:
           # show detailed diagnostic information, which you can use for debugging, in the output.
           debug: 1 # optional
 
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v4.6.0
+        with:
+        # Artifact name
+          name: veracode-results # optional, default is artifact
+          # A file, directory or wildcard pattern that describes what to upload
+          path: "**results.json"
+
+  get-policy-flaws:
+    if: ${{  github.event.inputs.Run-Upload-and-Scan }}
+    runs-on: ${{ github.event.inputs.Runner-Image }}
+    container: 
+     image: veracode/api-signing:latest
+    steps:
+         - name: get policy flaws
+           run: |
+             cd /tmp
+             export VERACODE_API_KEY_ID=${{ secrets.VERACODE_API_ID }}
+             export VERACODE_API_KEY_SECRET=${{ secrets.VERACODE_API_KEY }}
+             guid=$(http --auth-type veracode_hmac GET "https://api.veracode.com/appsec/v1/applications?name=${{github.event.inputs.Veracode-App-Name}}" | jq -r '._embedded.applications[0].guid') 
+             echo GUID: ${guid}
+             total_flaws=$(http --auth-type veracode_hmac GET "https://api.veracode.com/appsec/v2/applications/${guid}/findings?scan_type=STATIC&violates_policy=True" | jq -r '.page.total_elements')
+             echo TOTAL_FLAWS: ${total_flaws}
+             http --auth-type veracode_hmac GET "https://api.veracode.com/appsec/v2/applications/${guid}/findings?scan_type=STATIC&violates_policy=True&size=${total_flaws}" > policy_flaws.json
+  
+         - name: save results file
+           uses: actions/upload-artifact@v3
+           with:
+             name: policy-flaws
+             path: /tmp/policy_flaws.json
+  
+         - name: Convert policy scan output to SARIF format
+           id: convert-policy
+           #if: ${{ github.event.inputs.Run-Upload-and-Scan }}
+           uses: Veracode/veracode-pipeline-scan-results-to-sarif@v1.0.7
+           with:
+            results-json: /tmp/policy_flaws.json
+            output-results-sarif: veracode-results.sarif
+            source-base-path-1: "^com/veracode:src/main/java/com/veracode"
+            source-base-path-2: "^WEB-INF:src/main/webapp/WEB-INF"
+            repo_owner: ${{ github.repository.owner }}
+            repo_name: ${{ github.repository.name }}
+            commitSHA: ${{ github.sha }}
+            ref: ${{ github.ref }}
+            githubToken: ${ github.token }
+            
+  get-pipeline-results:
+    if: ${{ github.event.inputs.Run-Pipeline-Scan }}
+    runs-on: ${{ github.event.inputs.Runner-Image }}
+    steps:
+      - name: get pipeline results
+        uses: actions/download-artifact@v3
+          #with:
+          #  name: "Veracode Pipeline-Scan Results"
+            
+      - name: Convert pipeline scan output to SARIF format
+        if: ${{ github.event.inputs.Run-Pipeline-Scan }}
+        id: convert-pipeline
+        uses: Veracode/veracode-pipeline-scan-results-to-sarif@v1.0.7
+        with:
+            results-json: filtered_results.json
+            output-results-sarif: veracode-results.sarif
+            source-base-path-1: "^com/veracode:src/main/java/com/veracode"
+            source-base-path-2: "^WEB-INF:src/main/webapp/WEB-INF"
+            repo_owner: ${{ github.repository.owner }}
+            repo_name: ${{ github.repository.name }}
+            commitSHA: ${{ github.sha }}
+            ref: ${{ github.ref }}
+            githubToken: ${ github.token }
+  
+
+   
+  run-dast-scans:
+    runs-on: ${{ github.event.inputs.Runner-Image }}
+    steps:
       - name: Build JSON file
         run: |
           touch input.json
