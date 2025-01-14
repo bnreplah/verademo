@@ -57,11 +57,11 @@ on:
             required: false
             type: 'string'
             default: 'bnreplah/verademo'
-          ScanDir:
-            description: "The directory where the build is located"
-            required: false
-            type: 'string'
-            default: '.'
+       #   ScanDir:
+       #     description: "The directory where the build is located"
+       #     required: false
+       #     type: 'string'
+       #     default: '.'
 env:
   SRCCLR_API_TOKEN: ${{secrets.SRCCLR_API_TOKEN}}
   VERACODE_API_KEY_ID: ${{secrets.VERACODE_API_ID}}
@@ -283,7 +283,7 @@ jobs:
           Expand-Archive -Path pipeline-scan-LATEST.zip -DestinationPath ./ -Force
           ls
           java -jar pipeline-scan.jar
-          java -jar pipeline-scan.jar --file ${{ github.event.inputs.ScanDir }}
+          java -jar pipeline-scan.jar --file app/target/verademo.war
 
       # Installs the Veracode CLI fro the one that uses a package manager
       - name: Veracode Pipeline Scan ( Java Wrapper ) [Windows PM]
@@ -293,7 +293,7 @@ jobs:
           choco install veracode-cli
           veracode version
           veracode static scan --help
-          veracode static scan ${{ github.event.inputs.ScanDir }}
+          veracode static scan app/target/verademo.war
           
       
       - name: Veracode Pipeline Scan ( Java Wrapper ) [Ubuntu no PM]
@@ -304,7 +304,7 @@ jobs:
           unzip -o pipeline-scan-LATEST.zip
           ls -la
           java -jar pipeline-scan.jar
-          java -jar pipeline-scan.jar --file ${{ github.event.inputs.ScanDir }}
+          java -jar pipeline-scan.jar --file app/target/verademo.war
 
           
       - name: Veracode Pipeline Scan ( Java Wrapper ) [MacOs PM]
@@ -314,7 +314,7 @@ jobs:
           brew install veracode/tap/veracode-cli
           veracode version
           veracode static scan --help
-          veracode static scan ${{ github.event.inputs.ScanDir }}
+          veracode static scan app/target/verademo.war
 
 
       - name: Veracode Pipeline Scan ( Java Wrapper ) [MacOs no PM]
@@ -325,7 +325,7 @@ jobs:
           unzip -o pipeline-scan-LATEST.zip
           ls -la
           java -jar pipeline-scan.jar
-          java -jar pipeline-scan.jar --file ${{ github.event.inputs.ScanDir }}
+          java -jar pipeline-scan.jar --file app/target/verademo.war
       
     
           
