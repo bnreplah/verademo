@@ -532,6 +532,7 @@ jobs:
           path: "**results.json"
 
   get-policy-flaws:
+    needs: veracode-sast-analysis
     if: ${{  github.event.inputs.Run-Upload-and-Scan }}
     runs-on: ${{ github.event.inputs.Runner-Image }}
     container: 
@@ -570,6 +571,7 @@ jobs:
             githubToken: ${ github.token }
             
   get-pipeline-results:
+    needs: veracode-sast-analysis
     if: ${{ github.event.inputs.Run-Pipeline-Scan }}
     runs-on: ${{ github.event.inputs.Runner-Image }}
     steps:
