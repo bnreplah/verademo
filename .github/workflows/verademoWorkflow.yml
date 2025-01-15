@@ -558,7 +558,7 @@ jobs:
          - name: Convert policy scan output to SARIF format
            id: convert-policy
            #if: ${{ github.event.inputs.Run-Upload-and-Scan }}
-           uses: Veracode/veracode-pipeline-scan-results-to-sarif@v1.0.7
+           uses: Veracode/veracode-pipeline-scan-results-to-sarif@v2.0.4
            with:
             results-json: /tmp/policy_flaws.json
             output-results-sarif: veracode-results.sarif
@@ -583,7 +583,7 @@ jobs:
       - name: Convert pipeline scan output to SARIF format
         if: ${{ github.event.inputs.Run-Pipeline-Scan }}
         id: convert-pipeline
-        uses: Veracode/veracode-pipeline-scan-results-to-sarif@v1.0.7
+        uses: Veracode/veracode-pipeline-scan-results-to-sarif@v2.0.4
         with:
             results-json: filtered_results.json
             output-results-sarif: veracode-results.sarif
