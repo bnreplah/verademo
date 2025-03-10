@@ -72,7 +72,7 @@ permissions:
   
 jobs:
   build:
-    runs-on: ${{inputs.Runner-Image}}
+    runs-on: ${{ github.event.inputs.Runner-Image }}
     # grants permissions for the artifact to be uploaded
     permissions:
       contents: write
@@ -298,7 +298,7 @@ jobs:
       
       - name: Veracode Pipeline Scan ( Java Wrapper ) [Ubuntu no PM]
         continue-on-error: true
-        if: ${{ ( ! env.OVER_LIMIT ) && ( ! github.event.inputs.UseActions ) &&  ( github.event.inputs.Runner-Image == 'ubuntu-latest' ) && github.event.inputs.Run-Pipeline-Scan  }}
+        if: ${{ ( ! env.OVER_LIMIT ) && ( ! github.event.inputs.UseActions ) &&  ( github.event.inputs.Runner-Image == 'ubuntu-latest' ) && ( github.event.inputs.Run-Pipeline-Scan )  }}
         run: |
           curl -sSO https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
           unzip -o pipeline-scan-LATEST.zip
@@ -309,7 +309,7 @@ jobs:
           
       - name: Veracode Pipeline Scan ( Java Wrapper ) [MacOs PM]
         continue-on-error: true
-        if: ${{ ( ! env.OVER_LIMIT ) && ( ! github.event.inputs.UseActions ) &&  ( github.event.inputs.Runner-Image == 'macOs-latest' ) && github.event.inputs.Run-Pipeline-Scan  &&  github.event.inputs.UsePM  }}
+        if: ${{ ( ! env.OVER_LIMIT ) && ( ! github.event.inputs.UseActions ) &&  ( github.event.inputs.Runner-Image == 'macOs-latest' ) && ( github.event.inputs.Run-Pipeline-Scan ) && ( github.event.inputs.UsePM ) }}
         run: |
           brew install veracode/tap/veracode-cli
           veracode version
@@ -332,7 +332,7 @@ jobs:
           
       - name: Veracode Pipeline-Scan
         continue-on-error: true
-        if: ${{ ( ! env.OVER_LIMIT ) && github.event.inputs.UseActions && github.event.inputs.Run-Pipeline-Scan }}
+        if: ${{ ( ! env.OVER_LIMIT ) && ( github.event.inputs.UseActions ) && ( github.event.inputs.Run-Pipeline-Scan ) }}
       # You may pin to the exact commit or the version.
       # uses: veracode/Veracode-pipeline-scan-action@7bbcef3efc8720d36302fc912a7d63f7aba34f76
         uses: veracode/Veracode-pipeline-scan-action@v1.0.14
