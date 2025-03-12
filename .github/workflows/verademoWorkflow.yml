@@ -604,6 +604,8 @@ jobs:
         run: |
           touch input.json
           echo '{"name": "${{ vars.DAST_NAME}}", "scans": [{"scan_config_request": { "target_url": { "url": "${{vars.SCAN_URL}}" }}}],"schedule": {"duration": {"length": 1,"unit": "DAY"},"scheduled": true,"now": true }}' >> input.json
+           
+        #echo '{"name": "${{ vars.DAST_NAME}}", "schedule": {"duration": {"length": 1,"unit": "DAY"},"scheduled": true,"now": true }}' >> input.json
       - name: Create DAST Scan
         continue-on-error: true
         if: ${{ github.event.inputs.Run-DAST-Scan }}
