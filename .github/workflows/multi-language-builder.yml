@@ -1,0 +1,185 @@
+name: Multi-Language Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        type: choice
+        description: Operating System
+        options: 
+        - windows-latest
+        - macos-latest
+      repo:
+        required: false
+        type: string
+        description: repo
+
+jobs:
+  detect-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # ------------------ File Checkers ------------------
+
+      - name: Check for Node project
+        id: check_node
+        run: |
+          echo "node_found=$(test -f package.json && echo true || echo false)"
+          echo "node_found=$(test -f package.json && echo true || echo false)" >> $GITHUB_OUTPUT
+
+      - name: Check for Python project
+        id: check_python
+        run: |
+          echo "python_found=$(test -f requirements.txt || test -f pyproject.toml && echo true || echo false)"
+          echo "python_found=$(test -f requirements.txt || test -f pyproject.toml && echo true || echo false)" >> $GITHUB_OUTPUT
+
+      - name: Check for .NET project
+        id: check_dotnet
+        run: |
+          echo "dotnet_found=$(ls *.csproj 2>/dev/null | grep . && echo true || echo false)"
+          echo "dotnet_found=$(ls *.csproj 2>/dev/null | grep . && echo true || echo false)" >> $GITHUB_OUTPUT
+
+      - name: Check for Maven project
+        id: check_maven
+        run: |
+          echo "maven_found=$(test -f pom.xml && echo true || echo false)" 
+          echo "maven_found=$(test -f pom.xml && echo true || echo false)" >> $GITHUB_OUTPUT
+
+      - name: Check for Gradle project
+        id: check_gradle
+        run: |
+          echo "gradle_found=$(test -f build.gradle && echo true || echo false)"
+          echo "gradle_found=$(test -f build.gradle && echo true || echo false)" >> $GITHUB_OUTPUT
+
+      - name: Check for Go project
+        id: check_go
+        run: |
+          echo "go_found=$(test -f go.mod && echo true || echo false)"
+          echo "go_found=$(test -f go.mod && echo true || echo false)" >> $GITHUB_OUTPUT
+
+      - name: Check for Ruby project
+        id: check_ruby
+        run: |
+          echo "ruby_found=$(test -f Gemfile && echo true || echo false)"
+          echo "ruby_found=$(test -f Gemfile && echo true || echo false)" >> $GITHUB_OUTPUT
+
+      - name: Check for PHP project
+        id: check_php
+        run: |
+          echo "php_found=$(test -f composer.json && echo true || echo false)"
+          echo "php_found=$(test -f composer.json && echo true || echo false)" >> $GITHUB_OUTPUT
+
+      - name: Check for C/C++ project
+        id: check_c
+        run: |
+          echo "c_found=$(test -f Makefile || test -f CMakeLists.txt && echo true || echo false)"
+          echo "c_found=$(test -f Makefile || test -f CMakeLists.txt && echo true || echo false)" >> $GITHUB_OUTPUT
+
+      # ------------------ Setup and Build Steps ------------------
+
+      - name: Setup Node.js
+        if: ${{ steps.check_node.outputs.node_found == 'true' }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Build Node/React Native/etc
+        if: ${{ steps.check_node.outputs.node_found == 'true' }}
+        run: |
+          echo "🔧 Building Node.js/JavaScript/TypeScript/React Native/Cordova project"
+          npm install
+          npm run build || echo "No build script defined"
+
+      - name: Setup Python
+        if: ${{ steps.check_python.outputs.python_found == 'true' }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Build Python
+        if: ${{ steps.check_python.outputs.python_found == 'true' }}
+        run: |
+          echo "🔧 Building Python project"
+          pip install -r requirements.txt || pip install .
+
+      - name: Setup .NET
+        if: ${{ steps.check_dotnet.outputs.dotnet_found == 'true' }}
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.x'
+
+      - name: Build .NET
+        if: ${{ steps.check_dotnet.outputs.dotnet_found == 'true' }}
+        run: |
+          echo "🔧 Building .NET project"
+          dotnet build
+
+      - name: Setup Java (Maven)
+        if: ${{ steps.check_maven.outputs.maven_found == 'true' }}
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build Maven
+        if: ${{ steps.check_maven.outputs.maven_found == 'true' }}
+        run: |
+          echo "🔧 Building Maven Java project"
+          mvn clean install
+
+      - name: Build Gradle
+        if: ${{ steps.check_gradle.outputs.gradle_found == 'true' }}
+        run: |
+          echo "🔧 Building Gradle Java/Android/Kotlin project"
+          chmod +x ./gradlew
+          ./gradlew build
+
+      - name: Setup Go
+        if: ${{ steps.check_go.outputs.go_found == 'true' }}
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Build Go
+        if: ${{ steps.check_go.outputs.go_found == 'true' }}
+        run: |
+          echo "🔧 Building Go project"
+          go build ./...
+
+      - name: Setup Ruby
+        if: ${{ steps.check_ruby.outputs.ruby_found == 'true' }}
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+
+      - name: Build Ruby
+        if: ${{ steps.check_ruby.outputs.ruby_found == 'true' }}
+        run: |
+          echo "🔧 Building Ruby on Rails project"
+          bundle install
+          rake build || echo "No Rakefile found"
+
+      - name: Setup PHP
+        if: ${{ steps.check_php.outputs.php_found == 'true' }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Build PHP
+        if: ${{ steps.check_php.outputs.php_found == 'true' }}
+        run: |
+          echo "🔧 Building PHP project"
+          composer install
+
+      - name: Build C/C++
+        if: ${{ steps.check_c.outputs.c_found == 'true' }}
+        run: |
+          echo "🔧 Building C/C++ project"
+          sudo apt update && sudo apt install -y build-essential cmake
+          make || (cmake . && make)
+
+      - name: Placeholder for unsupported platforms (COBOL, Apex, ColdFusion, Titanium, Xamarin)
+        run: |
+          echo "⚠️ COBOL, ColdFusion, Apex, Titanium, and Xamarin require custom self-hosted runners and are not supported out of the box."
