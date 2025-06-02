@@ -122,7 +122,7 @@ jobs:
         continue-on-error: true
         # You may pin to the exact commit or the version.
         # uses: veracode/veracode-andscan-action@98e2a2941b985e55bfe469ebcb970b2e686625e4
-        uses: veracode/veracode-andscan-action@0.2.7
+        uses: veracode/veracode-uploadandscan-action@0.2.7
         with:
           # appname
           appname: ${{ github.repository.name }}
