@@ -1,4 +1,4 @@
-name: Veracode-SAST-SCA-Pipelinescan-import-issues Actions
+name: Veracode-SAST-Pipelinescan-import-issues Actions
 
 on:
   push:
@@ -10,10 +10,7 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # grants permissions for the artifact to be uploaded
-    permissions:
-      contents: write
-      packages: write
+    
     
     
     steps:
@@ -54,81 +51,81 @@ jobs:
         continue-on-error: true
         run: java -jar pipeline-scan.jar --veracode_api_id ${{secrets.VERACODE_API_ID}} --veracode_api_key ${{secrets.VERACODE_API_KEY}} --file app/target/verademo.war --fail_on_severity="Very High, High"
 
-      - name: Veracode Pipeline-Scan
-        # You may pin to the exact commit or the version.
-        # uses: veracode/Veracode-pipeline-scan-action@c94abab5dc83cccc825c05120b746835fc6f673a
-        continue-on-error: true
-        uses: veracode/Veracode-pipeline-scan-action@1.0.18
-        with:
-          # vid
-          vid: ${{ secrets.VERACODE_API_ID }}
-          # vkey
-          vkey: ${{ secrets.VERACODE_API_KEY }}
-          # Filename of the packaged application to upload and scan.
-          file: app/target/verademo.war
-          # GITHUB_TOKEN or a repo scoped PAT.
-          token: ${{ secrets.GH_TOKEN }} # default is ${{ github.token }}
-          # Name of the security policy to download as a file. Required only if you want to download the configuration for a custom policy defined by your organization. After downloading the policy, you can provide this file in a subsequent command using the policy_file parameter.
-          #request_policy: # optional
-          # Fail the pipeline job if the scan finds flaws of the specified severities. Enter a comma-separated list of severities in quotation marks.
-          #fail_on_severity: # optional
-          # Fail the pipeline job if the scan finds flaws of the specified CWEs. Enter a comma-separated list of CWE IDs.
-          #fail_on_cwe: # optional
-          # Filter the flaws that exist in the specified baseline file and show only the additional flaws in the current scan.
-          #baseline_file: results.json # optional
-          # Name of the Veracode default policy rule to apply to the scan results. You can only use this parameter with a Veracode default policy.
-          #policy_name: # optional
-          # Name of the local policy file you want to apply to the scan results. To download this file, use the --request_policy parameter.
-          #policy_file: # optional
-          # Amount of time, in minutes, for the Pipeline Scan to wait before reporting an unsuccessful scan if the scan does not complete. Default is 60 minutes, which is also the maximum value.
-          #timeout: # optional
-          # Enter true to show detailed messages for each issue in the results summary.
-          issue_details: true # optional
-          # Enter true to show a human-readable results summary on the console. Default is true.
-          summary_display: true # optional
-          # Enter true to show the JSON containing the scan results on the console. Default is false.
-          #json_display: # optional
-          # Enter true to display detailed messages in the scan results. Default is false.
-          verbose: true # optional
-          # Enter true to save the scan results as a human-readable file. Default is false.
-          summary_output: true # optional
-          # Enter the filename of the scan results summary file. The file is stored in the current directory. Default is results.txt.
-          summary_output_file: results.txt # optional
-          # Enter true to save the scan results in JSON format. Default is true.
-          #json_output: # optional
-          # Rename the JSON file that contains the scan results. The file is stored in the current directory. Default filename is results.json.
-          #json_output_file: # optional
-          # Enter the filename in the current directory to save results that violate pass-fail criteria. Default is filtered_results.json.
-          #filtered_json_output_file: # optional
-          # Enter the name of the CI/CD code repository that runs a Pipeline Scan. This parameter adds the repository name to the scan results, which can help you track scans across repositories.
-          project_name: Verademo # optional
-          # Enter the source control URL for the CI/CD code repository that runs a Pipeline Scan.
-          project_url: https://github.com/bnreplah/verademo # optional
-          # Enter the source control reference, revision, or branch for the CI/CD code repository that runs a Pipeline Scan.
-          project_ref: main # optional
-          # Enter the [application profile](https://docs.veracode.com/r/request_profile) ID for the application you want to  and scan.
-          #app_id: # optional
-          # Enter one these values, which are case-sensitive, for the type of development stage: Development, Testing, Release.
-          #development_stage: # optional
-          # Enable debug mode. 1 for on
-          debug: 1 # optional
-          # Enable the storage of a baseline file. Takes true or fales
-          store_baseline_file: true # optional
-          # Enter the branch name where the baseline file should be stored
-          store_baseline_file_branch: baseline # optional
-          # From which results should the baseline file be created. standard = full results || filtered = filtered results
-          create_baseline_from: standard # optional
-          # Fail the build upon findings. Takes true or false
-          fail_build: false # optional
+#      - name: Veracode Pipeline-Scan
+#        # You may pin to the exact commit or the version.
+#        # uses: veracode/Veracode-pipeline-scan-action@c94abab5dc83cccc825c05120b746835fc6f673a
+#        continue-on-error: true
+#        uses: veracode/Veracode-pipeline-scan-action@1.0.18
+#        with:
+#          # vid
+#          vid: ${{ secrets.VERACODE_API_ID }}
+#          # vkey
+#          vkey: ${{ secrets.VERACODE_API_KEY }}
+#          # Filename of the packaged application to upload and scan.
+#          file: app/target/verademo.war
+#          # GITHUB_TOKEN or a repo scoped PAT.
+#          token: ${{ secrets.GH_TOKEN }} # default is ${{ github.token }}
+#          # Name of the security policy to download as a file. Required only if you want to download the configuration for a custom policy defined by your organization. After downloading the policy, you can provide this file in a subsequent command using the policy_file parameter.
+#          #request_policy: # optional
+#          # Fail the pipeline job if the scan finds flaws of the specified severities. Enter a comma-separated list of severities in quotation marks.
+#          #fail_on_severity: # optional
+#          # Fail the pipeline job if the scan finds flaws of the specified CWEs. Enter a comma-separated list of CWE IDs.
+#          #fail_on_cwe: # optional
+#          # Filter the flaws that exist in the specified baseline file and show only the additional flaws in the current scan.
+#          #baseline_file: results.json # optional
+#          # Name of the Veracode default policy rule to apply to the scan results. You can only use this parameter with a Veracode default policy.
+#          #policy_name: # optional
+#          # Name of the local policy file you want to apply to the scan results. To download this file, use the --request_policy parameter.
+#          #policy_file: # optional
+#          # Amount of time, in minutes, for the Pipeline Scan to wait before reporting an unsuccessful scan if the scan does not complete. Default is 60 minutes, which is also the maximum value.
+#          #timeout: # optional
+#          # Enter true to show detailed messages for each issue in the results summary.
+#          issue_details: true # optional
+#          # Enter true to show a human-readable results summary on the console. Default is true.
+#          summary_display: true # optional
+#          # Enter true to show the JSON containing the scan results on the console. Default is false.
+#          #json_display: # optional
+#          # Enter true to display detailed messages in the scan results. Default is false.
+#          verbose: true # optional
+#          # Enter true to save the scan results as a human-readable file. Default is false.
+#          summary_output: true # optional
+#          # Enter the filename of the scan results summary file. The file is stored in the current directory. Default is results.txt.
+#          summary_output_file: results.txt # optional
+#          # Enter true to save the scan results in JSON format. Default is true.
+#          #json_output: # optional
+#          # Rename the JSON file that contains the scan results. The file is stored in the current directory. Default filename is results.json.
+#          #json_output_file: # optional
+#          # Enter the filename in the current directory to save results that violate pass-fail criteria. Default is filtered_results.json.
+#          #filtered_json_output_file: # optional
+#          # Enter the name of the CI/CD code repository that runs a Pipeline Scan. This parameter adds the repository name to the scan results, which can help you track scans across repositories.
+#          project_name: Verademo # optional
+#          # Enter the source control URL for the CI/CD code repository that runs a Pipeline Scan.
+#          project_url: https://github.com/bnreplah/verademo # optional
+#          # Enter the source control reference, revision, or branch for the CI/CD code repository that runs a Pipeline Scan.
+#          project_ref: main # optional
+#          # Enter the [application profile](https://docs.veracode.com/r/request_profile) ID for the application you want to  and scan.
+#          #app_id: # optional
+#          # Enter one these values, which are case-sensitive, for the type of development stage: Development, Testing, Release.
+#          #development_stage: # optional
+#          # Enable debug mode. 1 for on
+#          debug: 1 # optional
+#          # Enable the storage of a baseline file. Takes true or fales
+#          store_baseline_file: true # optional
+#          # Enter the branch name where the baseline file should be stored
+#          store_baseline_file_branch: baseline # optional
+#          # From which results should the baseline file be created. standard = full results || filtered = filtered results
+#          create_baseline_from: standard # optional
+#          # Fail the build upon findings. Takes true or false
+#          fail_build: false # optional
 
-      - name: Veracode Upoad And Scan
+      - name: Veracode Upload And Scan
         continue-on-error: true
         # You may pin to the exact commit or the version.
         # uses: veracode/veracode-andscan-action@98e2a2941b985e55bfe469ebcb970b2e686625e4
         uses: veracode/veracode-andscan-action@0.2.7
         with:
           # appname
-          appname: ${{ github.repository }}
+          appname: ${{ github.repository.name }}
           # createprofile
           createprofile: true
           # filepath
@@ -178,8 +175,70 @@ jobs:
           # automatically select all new top-level modules for inclusion in the scan
           includenewmodules: true
 
+      - name: Veracode Upload And Scan 2
+        continue-on-error: true
+        # You may pin to the exact commit or the version.
+        # uses: veracode/veracode-andscan-action@98e2a2941b985e55bfe469ebcb970b2e686625e4
+        uses: veracode/uploadandscan-action@v0.1.7
+        with:
+          # appname
+          appname: ${{ github.repository.name }}
+          # createprofile
+          createprofile: false
+          # filepath
+          filepath: app/target/verademo.war
+          # version
+          version:  ${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
+          # vid
+          vid: ${{ secrets.VERACODE_API_ID }}
+          # vkey
+          vkey:  ${{ secrets.VERACODE_API_KEY }}
+          # true or false
+          createsandbox: true # optional
+          # name of the sandbox
+          sandboxname: 'GitHub Action Test' # optional
+          # wait X minutes for the scan to complete
+          scantimeout: 30 # optional
+          # modules to exclude from module selection
+          #exclude: # optional
+          # modules to include in module selection
+          #include: # optional
+          # business criticality - policy selection
+          criticality: 'Very High' # optional
+          # filename pattern
+          #pattern: # optional
+          # replacement
+          #replacement: # optional
+          # specify to scan in a sandbox
+          #sandboxid: # optional
+          # All top level modules
+          scanallnonfataltoplevelmodules: true
+          # platform selected modules
+          #selected: # optional
+          # selected modules like from previous scan
+          #selectedpreviously: true
+          # teams
+          teams: "Demo Team" # optional
+          # teams
+          toplevel: true 
+          # automatically delete the current scan if there are any errors when uploading files or starting the scan
+          deleteincompletescan: 2 
+          # Interval, in seconds, to poll for the status of a running scan. Value range is 30 to 120 (two minutes). Default is 120.
+          #scanpollinginterval: # optional
+          # specify version of the Java API Wrapper; default is latest
+          #javawrapperversion: # optional
+          # show detailed diagnostic information, which you can use for debugging, in the output.
+          debug: true
+          # automatically select all new top-level modules for inclusion in the scan
+          includenewmodules: true
+
+      
+
+
+
   get-policy-flaws:
     runs-on: ubuntu-latest
+    needs: build
     continue-on-error: true
     container: 
       image: veracode/api-signing:latest
@@ -203,10 +262,10 @@ jobs:
           name: policy-flaws
           path: /tmp/policy_flaws.json
       
-      - name: save results file
+      - name: save pipeline results file
         uses: actions/upload-artifact@v4
         with:
-          name: policy-flaws
+          name: pipeline-flaws
           path: /tmp/results.json
       
           
@@ -222,6 +281,13 @@ jobs:
         with:
           name: policy-flaws
           path: /tmp
+
+      - name: Get scan results
+        uses: actions/download-artifact@v3
+        with:
+          name: pipeline-flaws
+          path: /tmp
+          
       - name: Convert policy scan output to SARIF format
         id: convert
         uses: Veracode/veracode-pipeline-scan-results-to-sarif@granular_severities
