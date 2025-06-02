@@ -203,7 +203,12 @@ jobs:
           name: policy-flaws
           path: /tmp/policy_flaws.json
       
-          
+      - name: save results file
+        uses: actions/upload-artifact@v4
+        with:
+          name: policy-flaws
+          path: /tmp/results.json
+      
           
   results_to_security_tab:
     needs: get-policy-flaws
@@ -242,7 +247,7 @@ jobs:
         with:
           dts_type: ADO
           ADO_PAT: ${{ secrets.ADO_PAT }}
-          ADO_ORG: bhalpern
+          ADO_ORG: bhalpern0558-Demo
           ADO_PROJECT: Verademo
           scan-results-json: '/tmp/policy_flaws.json'
           debug: true
@@ -257,7 +262,7 @@ jobs:
         uses: veracode/veracode-flaws-to-issues@v2.2.25
         with:
           # Scan results file
-          scan-results-json: results.json # default is filtered_results.json
+          scan-results-json: '/tmp/policy_flaws.json' # default is filtered_results.json
           # GitHub token to access the repo
           github-token: ${{ secrets.GH_TOKEN }} 
           # Delay (in seconds) between entering Issues into GitHub (due to rate limiting)
