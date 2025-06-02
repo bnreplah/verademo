@@ -125,7 +125,7 @@ jobs:
         uses: veracode/veracode-uploadandscan-action@0.2.7
         with:
           # appname
-          appname: ${{ github.repository.name }}
+          appname: ${{ github.repository }}
           # createprofile
           createprofile: true
           # filepath
@@ -182,9 +182,9 @@ jobs:
         uses: veracode/uploadandscan-action@v0.1.7
         with:
           # appname
-          appname: ${{ github.repository.name }}
+          appname: ${{ github.repository }}
           # createprofile
-          createprofile: false
+          createprofile: true
           # filepath
           filepath: app/target/verademo.war
           # version
