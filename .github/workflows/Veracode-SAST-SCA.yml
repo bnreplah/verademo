@@ -163,7 +163,6 @@ jobs:
           # teams
           teams: "Demo Team" # optional
           # teams
-          toplevel: true 
           # automatically delete the current scan if there are any errors when uploading files or starting the scan
           deleteincompletescan: 2 
           # Interval, in seconds, to poll for the status of a running scan. Value range is 30 to 120 (two minutes). Default is 120.
@@ -220,9 +219,9 @@ jobs:
           # teams
           teams: "Demo Team" # optional
           # teams
-          toplevel: true 
+          #toplevel: true 
           # automatically delete the current scan if there are any errors when uploading files or starting the scan
-          deleteincompletescan: 2 
+          deleteincompletescan: true
           # Interval, in seconds, to poll for the status of a running scan. Value range is 30 to 120 (two minutes). Default is 120.
           #scanpollinginterval: # optional
           # specify version of the Java API Wrapper; default is latest
