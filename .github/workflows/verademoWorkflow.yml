@@ -63,7 +63,8 @@ on:
        #     type: 'string'
        #     default: '.'
 env:
-  SRCCLR_API_TOKEN: ${{secrets.SRCCLR_API_TOKEN}}
+  SRCCLR_API_TOKEN: ${{ secrets.SRCCLR_API_TOKEN }}
+  SRCCLR_REGION: ${{ vars.SRCCLR_REGION }}
   VERACODE_API_KEY_ID: ${{secrets.VERACODE_API_ID}}
   VERACODE_API_KEY_SECRET: ${{secrets.VERACODE_API_KEY}}
   OVER_LIMIT_DEFAULT: true
@@ -83,6 +84,7 @@ jobs:
 
       - name: check inputs
         run: |
+          echo ${{ github.repository.name }}
           echo "Veracode CLI" ${{ inputs.VeracodeCLI }}
           echo "UseActions" ${{ inputs.UseActions }}
           echo "Run-Pipeline-Scan:" ${{inputs.Run-Pipeline-Scan }}
@@ -112,7 +114,7 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
 
-      - name: Install the Veracode CLI ( Ubuntu )
+      - name: Install the Veracode CLI ( Ubuntu ) and package
         if: ${{ ( github.event.inputs.VeracodeCLI == 'true' ) && ( github.event.inputs.Runner-Image == 'ubuntu-latest' ) }}
         run: |
             curl -fsS https://tools.veracode.com/veracode-cli/install | sh
@@ -135,7 +137,7 @@ jobs:
           ls
           ls .veracode/build/
 
-      - name: Install the Veracode CLI ( windows ) 
+      - name: Install the Veracode CLI ( windows ) and package
         if: ${{ ( github.event.inputs.VeracodeCLI == 'true' ) && ( github.event.inputs.Runner-Image == 'windows-latest' ) && ( github.event.inputs.UsePM == 'true' )  }}
         run: |
           choco install veracode-cli
@@ -145,7 +147,7 @@ jobs:
           ls
           ls .veracode/build/
           
-      - name: Install the Veracode CLI ( macOs ) 
+      - name: Install the Veracode CLI ( macOs ) and package
         if: ${{ ( github.event.inputs.VeracodeCLI == 'true' ) && ( github.event.inputs.Runner-Image == 'macOs-latest' ) && ( github.event.inputs.UsePM == 'true' )  }}
         run: |
           brew install veracode/tap/veracode-cli
@@ -170,7 +172,7 @@ jobs:
           ls .veracode/build/
           
         
-      - name: Build with Maven
+      - name: Build with Maven ( Default for Verademo ) # Change this per language
         if: ${{ !  ( github.event.inputs.VeracodeCLI == 'true' ) }}
         run: |
           mkdir .veracode 
