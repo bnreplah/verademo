@@ -61,7 +61,7 @@
 			<form method="post">
 				<label for="host">Host:</label> <input type="text" name="host"
 					<%if (request.getParameter("host") != null) {%>
-					value="<%=request.getParameter("host")%>" <%}%> /> <input
+					value="<%=request.getParameter("host")%>" <%}%> /> <input>					value="<%=request.getParameter("host")%>" <%}%> /> <input
 					type="submit" value="Check" />
 			</form>
 			<pre>${ping}</pre>
