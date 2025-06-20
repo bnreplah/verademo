@@ -110,18 +110,18 @@ jobs:
           uses: Veracode/veracode-fix@v1.0.3 #   uses: Veracode/veracode-fix@main
           with:
             inputFile: results.json
-            fixType: batch
+            #fixType: batch
             vid: ${{ secrets.VERACODE_API_ID }}
             vkey: ${{ secrets.VERACODE_API_KEY }}
             source_base_path_1: "com/:app/src/main/java/com/"
             source_base_path_2: "WEB-INF:app/src/main/webapp/WEB-INF"
             language: java
             createPR: true
-            prComment: true
-            debug: true
+            #prComment: true
+            #debug: true
             #cwe: '89,117,209'
-            
             fixType: batch
-            files: changed
+            files: all
             debug: true
             prComment: true
+            codeSuggestion: true
