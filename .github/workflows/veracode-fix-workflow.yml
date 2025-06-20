@@ -7,8 +7,63 @@ on:
         required: true
         description: "Run secondary upload of Sarif (test)"
         default: false
-        
-  
+      language:
+         type: choice
+         required: true
+         description: "Run secondary upload of Sarif (test)"
+         default: java
+         options:
+           - java
+           - csharp
+           - go
+           - javascript and typescript
+           - kotlin
+           - php
+           - python
+           - ruby
+           - scala
+      createPR:
+        type: boolean
+        required: true
+        description: "Create Pull Request"
+        default: false
+      fixType: 
+        type: choice
+        required: true
+        description: "Run secondary upload of Sarif (test)"
+        default: batch
+        options:
+          - single
+          - batch
+      files: 
+        type: choice
+        required: true
+        description: "Run secondary upload of Sarif (test)"
+        default: changed
+        options:
+          - all
+          - changed
+      debug:
+        type: boolean
+        required: true
+        description: "Run secondary upload of Sarif (test)"
+        default: false
+      prComment: 
+        type: boolean
+        required: true
+        description: "Run secondary upload of Sarif (test)"
+        default: false
+      codeSuggestion: 
+        type: boolean
+        required: true
+        description: "Run secondary upload of Sarif (test)"
+        default: false
+      cwe:
+        type: string
+        required: false
+        description: "list of CWEs to fix"
+      
+
 env:
   SRCCLR_API_TOKEN: ${{secrets.SRCCLR_API_TOKEN}}
 
@@ -152,13 +207,13 @@ jobs:
             vkey: ${{ secrets.VERACODE_API_KEY }}
             source-base-path-1: "com/:app/src/main/java/com/"
             source-base-path-2: "WEB-INF:app/src/main/webapp/WEB-INF"
-            language: java
-            createPR: true
+            language: ${{ inputs.language }}
+            createPR: ${{ inputs.createPR }}
             #prComment: true
             #debug: true
-            cwe: '117'
-            fixType: single
-            files: all
-            debug: true
-            prComment: true
-            codeSuggestion: true
+            #cwe: ${{ inputs.cwe }}
+            fixType: ${{ inputs.fixType }}
+            files: ${{ inputs.files }}
+            debug: ${{ inputs.debug }}
+            prComment: ${{ inputs.prComment }}
+            codeSuggestion: ${{ inputs.codeSuggestion }}
