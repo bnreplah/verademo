@@ -150,8 +150,8 @@ jobs:
             #fixType: batch
             vid: ${{ secrets.VERACODE_API_ID }}
             vkey: ${{ secrets.VERACODE_API_KEY }}
-            source_base_path_1: "com/:app/src/main/java/com/"
-            source_base_path_2: "WEB-INF:app/src/main/webapp/WEB-INF"
+            source-base-path-1: "com/:app/src/main/java/com/"
+            source-base-path-2: "WEB-INF:app/src/main/webapp/WEB-INF"
             language: java
             createPR: true
             #prComment: true
