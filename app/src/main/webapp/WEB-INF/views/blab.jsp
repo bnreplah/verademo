@@ -65,7 +65,7 @@
 			if (error != null) {
 		%>
 		<div class="alert alert-danger" role="alert">
-			<%= error %>
+			System.err.println("An exception occurred.");
 		</div>
 		<%
 			}
@@ -101,13 +101,13 @@
 							<li>
 								<div>
 									<div class="commenterImage">
-										<img src="resources/images/<%= comment.getAuthor().getUsername() %>.png" />
+										<img src="resources/images/<%= comment.getAuthor().getUsername() %>.png" />StringEscapeUtils.escapeXml11										<img src="resources/images/<%= comment.getAuthor().getUsername() %>.png" />
 									</div>
 									<div class="blockquote">
 										<p class="">
-											"<%= comment.getContent() %>"
+											"<%= comment.getContent() %>"HtmlUtils.htmlEscape											"<%= comment.getContent() %>"
 										</p>
-										<span class="date sub-text">by <%= comment.getAuthor().getBlabName() %>
+										<span class="date sub-text">by <%= comment.getAuthor().getBlabName() %>.encoder().encodeForHTMLAttribute()										<span class="date sub-text">by <%= comment.getAuthor().getBlabName() %>
 											on <%= comment.getTimestampString() %></span><br>
 									</div>
 								</div>
