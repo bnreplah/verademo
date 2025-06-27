@@ -56,7 +56,7 @@
 			if (null != error) {
 		%>
 		<div class="alert alert-danger" role="alert">
-			<%=error%>
+			System.err.println("An exception occurred.");
 		</div>
 
 		<%
