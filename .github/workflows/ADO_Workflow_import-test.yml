@@ -1,0 +1,132 @@
+name: ADO-Github-workitem-creation
+
+on: 
+  workflow_dispatch:
+    inputs:
+          ADO_PAT:
+            description: 'Azure Dev Ops Token:'
+            required: true
+            type: 'string'
+
+
+jobs:
+  veracode_security_scan:
+    runs-on: ubuntu-latest
+    name: Run Veracode scan
+    steps:
+      - name: Set up JDK 20
+        uses: actions/setup-java@v3
+        with:
+           java-version: '20'
+           distribution: 'adopt'
+            
+      - name: Build with Maven ( Default for Verademo ) # Change this per language
+        run: |
+          mkdir .veracode 
+          mkdir .veracode/build/ 
+          cd app/
+          mvn -B clean package --file pom.xml
+          ls target/
+          mv target/*.war -t ../.veracode/build/
+          ls ../.veracode/build/
+      
+
+      
+
+  get-policy-flaws:
+    runs-on: ubuntu-latest
+    needs: veracode_security_scan
+    continue-on-error: true
+    container: 
+      image: veracode/api-signing:latest
+    steps:
+      - name: get policy flaws
+        run: |
+          cd /tmp
+          export VERACODE_API_KEY_ID=${{ secrets.VERACODE_API_ID }}
+          export VERACODE_API_KEY_SECRET=${{ secrets.VERACODE_API_KEY }}
+          guid=$(http --auth-type veracode_hmac GET "https://api.veracode.com/appsec/v1/applications?name=test-action" | jq -r '._embedded.applications[0].guid') 
+          echo GUID: ${guid}
+          total_flaws=$(http --auth-type veracode_hmac GET "https://api.veracode.com/appsec/v2/applications/${guid}/findings?scan_type=STATIC&violates_policy=True" | jq -r '.page.total_elements')
+          echo TOTAL_FLAWS: ${total_flaws}
+          http --auth-type veracode_hmac GET "https://api.veracode.com/appsec/v2/applications/${guid}/findings?scan_type=STATIC&violates_policy=True&size=${total_flaws}&include_annot=TRUE" > policy_flaws.json
+          ls
+          pwd
+          
+      - name: save results file
+        uses: actions/upload-artifact@v4
+        with:
+          name: policy-flaws
+          path: /tmp/policy_flaws.json
+      
+      - name: save pipeline results file
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipeline-flaws
+          path: /tmp/results.json
+      
+          
+  results_to_security_tab:
+    needs: get-policy-flaws
+    runs-on: ubuntu-latest
+    #if: ${{ failure() && inputs.enable_security_report }}
+    if: always()
+    name: Send policy scan report to Security tab
+    steps:
+      - name: Get scan results
+        uses: actions/download-artifact@v3
+        with:
+          name: policy-flaws
+          path: /tmp
+
+      - name: Get scan results
+        uses: actions/download-artifact@v4.3.0
+        with:
+          name: pipeline-flaws
+          path: /tmp
+          
+      - name: Convert policy scan output to SARIF format
+        id: convert
+        uses: Veracode/veracode-pipeline-scan-results-to-sarif@granular_severities
+        with:
+          scan-type: policy
+          results-json: '/tmp/policy_flaws.json'
+          output-results-sarif: veracode-results.sarif
+          source_base_path_1: "com/:src/main/java/com/" # these will be dependant on the artifact, in this case it is specific to verademo
+          source_base_path_2: "WEB-INF:src/main/webapp/WEB-INF" # same as above
+          
+  import-policy-flaws:
+    needs: get-policy-flaws
+    runs-on: ubuntu-latest
+    steps:
+      - name: get flaw file
+        uses: actions/download-artifact@v4
+        with:
+          name: policy-flaws
+          path: /tmp
+
+      - name: import flaws as issues
+        uses: veracode/veracode-flaws-to-issues@ADO_workitems
+        with:
+          dts_type: ADO
+          ADO_PAT: ${{ inputs.ADO_PAT }}
+          ADO_ORG: ${{ inputs.ADO_ORG }}
+          ADO_PROJECT: ${{ inputs.ADO_PRJ }}
+          scan-results-json: '/tmp/policy_flaws.json'
+          debug: true
+
+     
+      
+      
+      - name: Veracode scan results to GitHub issues Action
+        continue-on-error: true
+        # You may pin to the exact commit or the version.
+        # uses: veracode/veracode-flaws-to-issues@e03c95a2d9ce730870fe160ff77bbce3b7f0e32d
+        uses: veracode/veracode-flaws-to-issues@v2.2.25
+        with:
+          # Scan results file
+          scan-results-json: '/tmp/policy_flaws.json' # default is filtered_results.json
+          # GitHub token to access the repo
+          github-token: ${{ secrets.GH_TOKEN }} 
+          # Delay (in seconds) between entering Issues into GitHub (due to rate limiting)
+          #wait-time: # optional, default is 2
