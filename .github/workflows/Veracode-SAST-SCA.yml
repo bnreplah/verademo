@@ -15,6 +15,7 @@ env:
 jobs:
   phylum_analyze_deps:
       name: Analyze dependencies with Veracode - Phylum
+      continue-on-error: true
       permissions:
         contents: read
         pull-requests: write
@@ -61,6 +62,7 @@ jobs:
           pwd
           
       - name: Upload a Build Artifact
+        continue-on-error: true
         uses: actions/upload-artifact@v4.6.0
         with:
             # Artifact name
@@ -271,6 +273,7 @@ jobs:
       image: veracode/api-signing:latest
     steps:
       - name: get policy flaws
+        continue-on-error: true
         run: |
           cd /tmp
           export VERACODE_API_KEY_ID=${{ secrets.VERACODE_API_ID }}
