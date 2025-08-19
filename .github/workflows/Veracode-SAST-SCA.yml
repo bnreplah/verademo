@@ -284,12 +284,14 @@ jobs:
           pwd
           
       - name: save results file
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: policy-flaws
           path: /tmp/policy_flaws.json
       
       - name: save pipeline results file
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: pipeline-flaws
@@ -305,11 +307,13 @@ jobs:
     steps:
       - name: Get scan results
         uses: actions/download-artifact@v3
+        continue-on-error: true
         with:
           name: policy-flaws
           path: /tmp
 
       - name: Get scan results
+        continue-on-error: true
         uses: actions/download-artifact@v4.3.0
         with:
           name: pipeline-flaws
@@ -318,6 +322,7 @@ jobs:
       - name: Convert policy scan output to SARIF format
         id: convert
         uses: Veracode/veracode-pipeline-scan-results-to-sarif@granular_severities
+        continue-on-error: true
         with:
           scan-type: policy
           results-json: '/tmp/policy_flaws.json'
@@ -330,6 +335,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: get flaw file
+        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: policy-flaws
@@ -337,6 +343,7 @@ jobs:
 
       - name: import flaws as issues
         uses: veracode/veracode-flaws-to-issues@ADO_workitems
+        continue-on-error: true
         with:
           dts_type: ADO
           ADO_PAT: ${{ secrets.ADO_PAT }}
