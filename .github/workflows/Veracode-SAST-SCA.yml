@@ -3,6 +3,11 @@ name: Veracode-SAST-Pipelinescan-import-issues Actions
 on:
   push:
   workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+  issues: write
   
 env:
   SRCCLR_API_TOKEN: ${{secrets.SRCCLR_API_TOKEN}}
