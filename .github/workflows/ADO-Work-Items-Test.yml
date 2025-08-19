@@ -1,17 +1,17 @@
-name: Veracode-SAST-Pipelinescan-import-issues Actions
+name: ADO Work Item Test
 
 on:
   workflow_dispatch:
      inputs:
           ADOPAT:
-            description: 'Package Using Veracode CLI'
+            description: 'ADO Pat:'
             required: true
             #type: 'string'
           ADOORG: 
             description: 'ADO org name'
             required: true
           ADOPRJ: 
-            description: 'ADO org name'
+            description: 'ADO project name'
             required: true
             
 env:
