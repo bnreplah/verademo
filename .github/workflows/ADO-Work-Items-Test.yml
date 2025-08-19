@@ -1,0 +1,66 @@
+name: Veracode-SAST-Pipelinescan-import-issues Actions
+
+on:
+  workflow_dispatch:
+     inputs:
+          ADOPAT:
+            description: 'Package Using Veracode CLI'
+            required: true
+            #type: 'string'
+          ADOORG: 
+            description: 'ADO org name'
+            required: true
+          ADOPRJ: 
+            description: 'ADO org name'
+            required: true
+            
+env:
+  SRCCLR_API_TOKEN: ${{secrets.SRCCLR_API_TOKEN}}
+
+jobs:
+
+
+  get-policy-flaws:
+      runs-on: ubuntu-latest
+      continue-on-error: true
+      container: 
+        image: veracode/api-signing:latest
+      steps:
+        - name: get policy flaws
+          run: |
+            cd /tmp
+            export VERACODE_API_KEY_ID=${{ secrets.VERACODE_API_ID }}
+            export VERACODE_API_KEY_SECRET=${{ secrets.VERACODE_API_KEY }}
+            guid=$(http --auth-type veracode_hmac GET "https://api.veracode.com/appsec/v1/applications?name=test-action" | jq -r '._embedded.applications[0].guid') 
+            echo GUID: ${guid}
+            total_flaws=$(http --auth-type veracode_hmac GET "https://api.veracode.com/appsec/v2/applications/${guid}/findings?scan_type=STATIC&violates_policy=True" | jq -r '.page.total_elements')
+            echo TOTAL_FLAWS: ${total_flaws}
+            http --auth-type veracode_hmac GET "https://api.veracode.com/appsec/v2/applications/${guid}/findings?scan_type=STATIC&violates_policy=True&size=${total_flaws}&include_annot=TRUE" > policy_flaws.json
+            ls
+            pwd
+            
+        - name: save results file
+          uses: actions/upload-artifact@v4
+          with:
+            name: policy-flaws
+            path: /tmp/policy_flaws.json
+
+  import-policy-flaws:
+    needs: get-policy-flaws
+    runs-on: ubuntu-latest
+    steps:
+      - name: get flaw file
+        uses: actions/download-artifact@v4
+        with:
+          name: policy-flaws
+          path: /tmp
+
+      - name: import flaws as issues
+        uses: veracode/veracode-flaws-to-issues@ADO_workitems
+        with:
+          dts_type: ADO
+          ADO_PAT: '${{ inputs.ADOPAT }}'
+          ADO_ORG: '${{ inputs.ADOORG }}'
+          ADO_PROJECT: '${{ inputs.ADOPRJ }}'
+          scan-results-json: '/tmp/policy_flaws.json'
+          debug: true
