@@ -13,7 +13,18 @@ on:
           ADOPRJ: 
             description: 'ADO project name'
             required: true
-            
+          SCA_TOKEN:
+            description: 'SCA Agent Based Token'
+            required: false
+          SCA_SLUG:
+            description: 'SCA Workspace Slug'
+            required: false
+          VKEY:
+            description: 'Veracode API Key'
+            required: false
+          VID:
+            description: 'Veracode API ID'
+            required: false
 env:
   SRCCLR_API_TOKEN: ${{secrets.SRCCLR_API_TOKEN}}
 
@@ -29,8 +40,8 @@ jobs:
         - name: get policy flaws
           run: |
             cd /tmp
-            export VERACODE_API_KEY_ID=${{ secrets.VERACODE_API_ID }}
-            export VERACODE_API_KEY_SECRET=${{ secrets.VERACODE_API_KEY }}
+            export VERACODE_API_KEY_ID=${{ inputs.VKEY || secrets.VERACODE_API_ID }}
+            export VERACODE_API_KEY_SECRET=${{  inputs.VID || secrets.VERACODE_API_KEY }}
             guid=$(http --auth-type veracode_hmac GET "https://api.veracode.com/appsec/v1/applications?name=test-action" | jq -r '._embedded.applications[0].guid') 
             echo GUID: ${guid}
             total_flaws=$(http --auth-type veracode_hmac GET "https://api.veracode.com/appsec/v2/applications/${guid}/findings?scan_type=STATIC&violates_policy=True" | jq -r '.page.total_elements')
