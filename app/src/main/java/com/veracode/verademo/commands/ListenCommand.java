@@ -8,6 +8,7 @@ import java.sql.Statement;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.commons.lang3.StringUtils;
 
 public class ListenCommand implements BlabberCommand {
 	private static final Logger logger = LogManager.getLogger("VeraDemo:ListenCommand");
@@ -35,16 +36,19 @@ public class ListenCommand implements BlabberCommand {
 			action.execute();
 
 			sqlQuery = "SELECT blab_name FROM users WHERE username = '" + blabberUsername + "'";
-			Statement sqlStatement = connect.createStatement();
-			logger.info(sqlQuery);
-			ResultSet result = sqlStatement.executeQuery(sqlQuery);
+			PreparedStatement sqlStatement = connect.prepareStatement(sqlQuery);
+			sqlStatement.setString(1, blabberUsername);
+			logger.info(StringUtils.normalizeSpace(sqlQuery));
+			ResultSet result = sqlStatement.executeQuery();
 			result.next();
 
 			/* START EXAMPLE VULNERABILITY */
-			String event = username + " started listening to " + blabberUsername + " (" + result.getString(1) + ")";
-			sqlQuery = "INSERT INTO users_history (blabber, event) VALUES (\"" + username + "\", \"" + event + "\")";
-			logger.info(sqlQuery);
-			sqlStatement.execute(sqlQuery);
+			String event = username + " started listening to " + result.getString(1) + " (" + result.getString(1) + ")";
+			if (result!= null) {
+			    sqlQuery = "INSERT INTO users_history (blabber, event) VALUES (\"" + username + "\", \"" + event + "\")";
+			    logger.info(sqlQuery);
+			    sqlStatement.execute(sqlQuery);
+			}
 			/* END EXAMPLE VULNERABILITY */
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
