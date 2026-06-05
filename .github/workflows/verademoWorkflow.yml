@@ -627,7 +627,14 @@ jobs:
             ref: ${{ github.ref }}
             githubToken: ${ github.token }
   
-      
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+              # Path to SARIF file relative to the root of the repository
+              sarif_file: veracode-results.sarif
+              # Optional category for the results
+              # Used to differentiate multiple results for one commit
+              #category: Veracode
    
   run-dast-scans:
     runs-on: ${{ github.event.inputs.Runner-Image }}
