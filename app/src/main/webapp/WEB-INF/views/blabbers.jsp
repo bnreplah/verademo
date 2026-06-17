@@ -62,7 +62,7 @@
 			if (null != error) {
 		%>
 		<div class="alert alert-danger" role="alert">
-			<%=error%>
+			System.err.println("An exception occurred.");
 		</div>
 
 		<%
@@ -97,10 +97,10 @@
 								%>
 								<tr>
 									<td class="commenterImage">
-										<img src="resources/images/<%= blabber.getUsername() %>.png" />
+										<img src="resources/images/<%= blabber.getUsername() %>.png" />HtmlUtils.htmlEscape										<img src="resources/images/<%= blabber.getUsername() %>.png" />
 									</td>
 									<td class="commenterName">
-										<%= blabber.getBlabName() %>
+										<%= blabber.getBlabName() %>StringEscapeUtils.escapeXml11										<%= blabber.getBlabName() %>
 									</td>
 									<td class="commenterJoinDate">
 										<%= blabber.getCreatedDateString() %>

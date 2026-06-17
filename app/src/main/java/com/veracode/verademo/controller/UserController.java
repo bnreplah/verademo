@@ -52,6 +52,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+import java.net.URLEncoder;
+import org.apache.commons.lang3.StringUtils;
+import org.owasp.encoder.Encode;
+import org.apache.commons.text.StringEscapeUtils;
 
 /**
  * @author johnadmin
@@ -112,7 +116,7 @@ public class UserController {
 			target = "";
 		}
 
-		logger.info("Entering showLogin with username " + username + " and target " + target);
+		logger.info("Entering showLogin with username " + StringEscapeUtils.escapeJava(username) + " and target " + target);
 
 		model.addAttribute("username", username);
 		model.addAttribute("target", target);
@@ -147,22 +151,21 @@ public class UserController {
 		}
 
 		Connection connect = null;
-		Statement sqlStatement = null;
-
+		PreparedStatement sqlStatement = null;
 		try {
-			// Get the Database Connection
-			logger.info("Creating the Database connection");
-			Class.forName("com.mysql.jdbc.Driver");
-			connect = DriverManager.getConnection(Constants.create().getJdbcConnectionString());
-
-			/* START EXAMPLE VULNERABILITY */
-			// Execute the query
-			logger.info("Creating the Statement");
-			String sqlQuery = "select username, password, password_hint, created_at, last_login, real_name, blab_name from users where username='"
-					+ username + "' and password='" + md5(password) + "';";
-			sqlStatement = connect.createStatement();
-			logger.info("Execute the Statement");
-			ResultSet result = sqlStatement.executeQuery(sqlQuery);
+		    // Get the Database Connection
+		    logger.info("Creating the Database connection");
+		    Class.forName("com.mysql.jdbc.Driver");
+		    connect = DriverManager.getConnection(Constants.create().getJdbcConnectionString());
+		    /* START EXAMPLE FIX */
+		    // Execute the query
+		    logger.info("Creating the Statement");
+		    String sqlQuery = "select username, password, password_hint, created_at, last_login, real_name, blab_name from users where username=? and password=?;";
+		    sqlStatement = connect.prepareStatement(sqlQuery);
+		    logger.info("Execute the Statement");
+		    sqlStatement.setString(1, username);
+		    sqlStatement.setString(2, md5(password));
+		    ResultSet result = sqlStatement.executeQuery(sqlQuery);
 			/* END EXAMPLE VULNERABILITY */
 
 			// Did we find exactly 1 user that matched?
@@ -225,14 +228,14 @@ public class UserController {
 		}
 
 		// Redirect to the appropriate place based on login actions above
-		logger.info("Redirecting to view: " + nextView);
+		logger.info("Redirecting to view: " + StringUtils.normalizeSpace(nextView));
 		return nextView;
 	}
 
 	@RequestMapping(value = "/password-hint", method = RequestMethod.GET)
 	@ResponseBody
 	public String showPasswordHint(String username) {
-		logger.info("Entering password-hint with username: " + username);
+		logger.info("Entering password-hint with username: " + StringEscapeUtils.escapeJava(username));
 
 		if (username == null || username.isEmpty()) {
 			return "No username provided, please type in your username first";
@@ -244,16 +247,16 @@ public class UserController {
 			Connection connect = DriverManager.getConnection(Constants.create().getJdbcConnectionString());
 
 			String sql = "SELECT password_hint FROM users WHERE username = '" + username + "'";
-			logger.info(sql);
+			logger.info(StringEscapeUtils.escapeJava(sql));
 			Statement statement = connect.createStatement();
 			ResultSet result = statement.executeQuery(sql);
 			if (result.first()) {
 				String password = result.getString("password_hint");
 				String formatString = "Username '" + username + "' has password: %.2s%s";
-				logger.info(formatString);
+				logger.info(StringUtils.normalizeSpace(formatString));
 				return String.format(
 						formatString,
-						password,
+						Encode.forHtml(password),
 						String.format("%0" + (password.length() - 2) + "d", 0).replace("0", "*"));
 			} else {
 				return "No password found for " + username;
@@ -306,8 +309,9 @@ public class UserController {
 			Connection connect = DriverManager.getConnection(Constants.create().getJdbcConnectionString());
 
 			String sql = "SELECT username FROM users WHERE username = '" + username + "'";
-			Statement statement = connect.createStatement();
-			ResultSet result = statement.executeQuery(sql);
+			PreparedStatement statement = connect.prepareStatement(sql);
+			statement.setString(1, username);
+			ResultSet result = statement.executeQuery();
 			if (result.first()) {
 				model.addAttribute("error", "Username '" + username + "' already exists!");
 				return "register";
@@ -349,30 +353,28 @@ public class UserController {
 		}
 
 		Connection connect = null;
-		Statement sqlStatement = null;
-
+		PreparedStatement sqlStatement = null;
 		try {
-			// Get the Database Connection
-			logger.info("Creating the Database connection");
-			Class.forName("com.mysql.jdbc.Driver");
-			connect = DriverManager.getConnection(Constants.create().getJdbcConnectionString());
-
-			/* START EXAMPLE VULNERABILITY */
-			// Execute the query
-			String mysqlCurrentDateTime = (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"))
-					.format(Calendar.getInstance().getTime());
-			StringBuilder query = new StringBuilder();
-			query.append("insert into users (username, password, created_at, real_name, blab_name) values(");
-			query.append("'" + username + "',");
-			query.append("'" + md5(password) + "',");
-			query.append("'" + mysqlCurrentDateTime + "',");
-			query.append("'" + realName + "',");
-			query.append("'" + blabName + "'");
-			query.append(");");
-
-			sqlStatement = connect.createStatement();
-			sqlStatement.execute(query.toString());
-			logger.info(query.toString());
+		    // Get the Database Connection
+		    logger.info("Creating the Database connection");
+		    Class.forName("com.mysql.jdbc.Driver");
+		    connect = DriverManager.getConnection(Constants.create().getJdbcConnectionString());
+		    /* START EXAMPLE FIX */
+		    // Execute the query
+		    String mysqlCurrentDateTime = (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"))
+		    .format(Calendar.getInstance().getTime());
+		    StringBuilder query = new StringBuilder();
+		    query.append("insert into users (username, password, created_at, real_name, blab_name) values(");
+		    query.append("'" + username + "', ");
+		    query.append("?, ");
+		    query.append("'" + mysqlCurrentDateTime + "', ");
+		    query.append("'" + realName + "', ");
+		    query.append("'" + blabName + "'");
+		    sqlStatement = connect.prepareStatement(query.toString());
+		    sqlStatement.setInt(1, username);
+		    sqlStatement.setString(2, md5(password));
+		    sqlStatement.execute();
+			logger.info(URLEncoder.encode(query.toString()));
 			/* END EXAMPLE VULNERABILITY */
 
 			emailUser(username);
@@ -474,9 +476,9 @@ public class UserController {
 			/* START EXAMPLE VULNERABILITY */
 			String sqlMyEvents = "select event from users_history where blabber=\"" + username
 					+ "\" ORDER BY eventid DESC; ";
-			logger.info(sqlMyEvents);
-			Statement sqlStatement = connect.createStatement();
-			ResultSet userHistoryResult = sqlStatement.executeQuery(sqlMyEvents);
+			logger.info(StringUtils.normalizeSpace(sqlMyEvents));
+			PreparedStatement sqlStatement = connect.prepareStatement(sqlMyEvents);
+			ResultSet userHistoryResult = sqlStatement.executeQuery( );
 			/* END EXAMPLE VULNERABILITY */
 
 			while (userHistoryResult.next()) {
@@ -484,9 +486,10 @@ public class UserController {
 			}
 
 			// Get the users information
-			String sql = "SELECT username, real_name, blab_name FROM users WHERE username = '" + username + "'";
-			logger.info(sql);
+			String sql = "SELECT username, real_name, blab_name FROM users WHERE username =?";
+			logger.info(StringEscapeUtils.escapeJava(sql));
 			myInfo = connect.prepareStatement(sql);
+			myInfo.setString(1, username);
 			ResultSet myInfoResults = myInfo.executeQuery();
 			myInfoResults.next();
 
@@ -538,7 +541,7 @@ public class UserController {
 			return "{\"message\": \"<script>alert('Error - please login');</script>\"}";
 		}
 
-		logger.info("User is Logged In - continuing... UA=" + request.getHeader("User-Agent") + " U=" + sessionUsername);
+		logger.info("User is Logged In - continuing... UA=" + StringUtils.normalizeSpace(request.getHeader("User-Agent")) + " U=" + sessionUsername);
 
 		String oldUsername = sessionUsername;
 
@@ -624,7 +627,7 @@ public class UserController {
 				String extension = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
 				String path = imageDir + username + extension;
 
-				logger.info("Saving new profile image: " + path);
+				logger.info("Saving new profile image: " + StringUtils.normalizeSpace(path));
 
 				file.transferTo(new File(path)); // will delete any existing file first
 			} catch (IllegalStateException | IOException ex) {
@@ -654,11 +657,11 @@ public class UserController {
 			return Utils.redirect("login?target=profile");
 		}
 
-		logger.info("User is Logged In - continuing... UA=" + request.getHeader("User-Agent") + " U=" + sessionUsername);
+		logger.info("User is Logged In - continuing... UA=" + Encode.forJava(request.getHeader("User-Agent")) + " U=" + sessionUsername);
 
 		String path = context.getRealPath("/resources/images") + File.separator + imageName;
 
-		logger.info("Fetching profile image: " + path);
+		logger.info("Fetching profile image: " + StringEscapeUtils.escapeJava(path));
 
 		InputStream inputStream = null;
 		OutputStream outStream = null;
@@ -672,12 +675,12 @@ public class UserController {
 				// set to binary type if MIME mapping not found
 				mimeType = "application/octet-stream";
 			}
-			logger.info("MIME type: " + mimeType);
+			logger.info("MIME type: " + StringUtils.normalizeSpace(mimeType));
 
 			// Set content attributes for the response
-			response.setContentType(mimeType);
+			response.setContentType(URLEncoder.encode(mimeType, Charset.defaultCharset()));
 			response.setContentLength((int) downloadFile.length());
-			response.setHeader("Content-Disposition", "attachment; filename=" + imageName);
+			response.setHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(imageName, Charset.defaultCharset()));
 
 			// get output stream of the response
 			outStream = response.getOutputStream();
@@ -757,7 +760,7 @@ public class UserController {
 			}
 		}
 
-		logger.info("Username: " + username + " already exists. Try again.");
+		logger.info("Username: " + StringUtils.normalizeSpace(username) + " already exists. Try again.");
 		return true;
 	}
 
@@ -811,7 +814,7 @@ public class UserController {
 			if (oldImage != null) {
 				String extension = oldImage.substring(oldImage.lastIndexOf("."));
 
-				logger.info("Renaming profile image from " + oldImage + " to " + newUsername + extension);
+				logger.info("Renaming profile image from " + StringUtils.normalizeSpace(oldImage) + " to " + newUsername + extension);
 				String path = context.getRealPath("/resources/images") + File.separator;
 
 				File oldName = new File(path + oldImage);
@@ -895,7 +898,7 @@ public class UserController {
 			message.setText(t.getMessage() + "<br>" + properties.getProperty("test") + displayErrorForWeb(t));
 
 			logger.info("Sending email to admin");
-			Transport.send(message);
+			System.err.println("An exception occurred.");
 		} catch (MessagingException mex) {
 			mex.printStackTrace();
 		}
