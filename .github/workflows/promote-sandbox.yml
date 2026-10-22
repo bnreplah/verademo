@@ -28,13 +28,13 @@ jobs:
             fi
             ls
             APPNAME=$GITHUB_REPOSITORY
-            APP_ID=$( java -jar VeracodeJavaAPI.jar -action getapplist | grep $APPNAME | cut -d '"' -f2 )
+            APP_ID=( java -jar VeracodeJavaAPI.jar -action getapplist | grep $APPNAME | cut -d '"' -f2 )
             echo "APP ID :" $APP_ID
             echo "GitHub HEAD REF:" $GITHUB_HEAD_REF 
             echo "Sandbox Name:" $SANDBOXNAME 
-            SANDBOX_ID=$(java -jar VeracodeJavaAPI.jar -action getsandboxlist -appid $APP_ID | grep $SANDBOXNAME | cut -d '"' -f10)
+            SANDBOX_ID=( java -jar VeracodeJavaAPI.jar -action getsandboxlist -appid $APP_ID | grep $SANDBOXNAME | cut -d '"' -f10)
             echo "Sandbox ID:" $SANDBOX_ID
-            BUILD_ID=$( java -jar VeracodeJavaAPI.jar -action getbuildinfo -appid $APP_ID -sandboxid SANDBOX_ID | grep "build_id" | cut -d '"' -f10 -z)
+            BUILD_ID=( java -jar VeracodeJavaAPI.jar -action getbuildinfo -appid $APP_ID -sandboxid SANDBOX_ID | grep "build_id" | cut -d '"' -f10 -z)
             echo "Build ID:" $BUILD_ID
             java -jar VeracodeJavaAPI.jar -action promotesandbox -buildid $BUILD_ID
     
