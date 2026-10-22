@@ -1,8 +1,11 @@
 name: promote sandbox
 
 on: 
-  - pull_request
-  - workflow_dispatch
+  workflow_dispatch:
+    inputs:
+      SANDBOX:
+        type: string
+  pull_request:
   
 jobs:
   promote:
@@ -12,6 +15,7 @@ jobs:
         env:
             VERACODE_API_KEY_ID:  ${{secrets.VERACODE_API_ID}}
             VERACODE_API_KEY_SECRET: ${{secrets.VERACODE_API_KEY}}
+            SANDBOXNAME: ${{ github.event_name == 'workflow_dispatch' && inputs.SANDBOX || github.head_ref }}
         run: |
             echo "Downloading the latest version of the Veracode Java API Wrapper"
             WRAPPER_VERSION=`curl https://repo1.maven.org/maven2/com/veracode/vosp/api/wrappers/vosp-api-wrappers-java/maven-metadata.xml | grep latest |  cut -d '>' -f 2 | cut -d '<' -f 1`
@@ -27,7 +31,6 @@ jobs:
             APP_ID=$( java -jar VeracodeJavaAPI.jar -action getapplist | grep $APPNAME | cut -d '"' -f2 )
             echo $APP_ID
             echo $GITHUB_HEAD_REF 
-            SANDBOXNAME=${{github.event.pull_request.head.ref}}
             SANDBOX_ID=$(java -jar VeracodeJavaAPI.jar -action getsandboxlist -appid $APP_ID | grep $SANDBOXNAME | cut -d '"' -f10)
             echo $SANDBOX_ID
             BUILD_ID=$( java -jar VeracodeJavaAPI.jar -action getbuildinfo -appid $APP_ID -sandboxid SANDBOX_ID | grep "build_id" | cut -d '"' -f10 -z)
