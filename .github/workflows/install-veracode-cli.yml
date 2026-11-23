@@ -1,0 +1,15 @@
+name: Veracode CLI
+
+on: 
+  workflow_dispatch:
+
+jobs:
+  veracode_security_scan:
+    runs-on: ubuntu-latest
+    name: Run Veracode DAST Essentials Scan
+    steps:
+    - name: install the veracode cli
+      run: |
+        curl -fsS https://tools.veracode.com/veracode-cli/install | sh
+        ./veracode 
+        
