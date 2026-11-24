@@ -1,4 +1,4 @@
-name: Veracode CLI
+name: Veracode DAST scan
 
 on: 
   workflow_dispatch:
