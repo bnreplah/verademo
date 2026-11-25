@@ -1,4 +1,4 @@
-name: Veracode DAST scan status
+name: Veracode DAST scan results
 
 on: 
   workflow_dispatch:
