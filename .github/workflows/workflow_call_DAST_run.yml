@@ -1,0 +1,27 @@
+
+name: Veracode DAST scan Workflow Call
+
+on: 
+  workflow_call:
+    inputs:
+      webhook_token:
+        description: 'Veracode Webhook associated to the target'
+        required: true
+        type: 'string'
+          
+# API ID and Key are saved as secrets
+jobs:
+  veracode_security_scan:
+    runs-on: ubuntu-latest
+    name: Run Veracode DAST Essentials Scan
+    steps:
+    
+    - name: install the veracode cli
+      env:
+        VERACODE_API_KEY_ID: ${{secrets.VERACODE_API_ID}}
+        VERACODE_API_KEY_SECRET: ${{secrets.VERACODE_API_KEY}}
+      run: |
+        curl -fsS https://tools.veracode.com/veracode-cli/install | sh
+        ./veracode dynamic scan --webhook ${{inputs.webhook_token}}
+  
+        
