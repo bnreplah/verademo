@@ -17,8 +17,8 @@ jobs:
     
     - name: install the veracode cli
       env:
-        VERACODE_API_KEY_ID: ${secrets.VERACODE_API_ID}
-        VERACODE_API_KEY_SECRET: ${secrets.VERACODE_API_KEY}
+        VERACODE_API_KEY_ID: ${{secrets.VERACODE_API_ID}}
+        VERACODE_API_KEY_SECRET: ${{secrets.VERACODE_API_KEY}}
       run: |
         curl -fsS https://tools.veracode.com/veracode-cli/install | sh
         ./veracode dynamic scan --webhook ${{inputs.webhook_token}}
