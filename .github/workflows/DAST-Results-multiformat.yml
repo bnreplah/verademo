@@ -1,0 +1,43 @@
+name: Veracode DAST scan status
+
+on: 
+  workflow_dispatch:
+    inputs:
+      webhook_token:
+        description: 'Veracode Webhook associated to the target'
+        required: true
+        type: 'string'
+      analysis_id:
+        description: 'Analysis id to check the status of'
+        required: true
+        type: 'string'
+      output_format:
+        description: 'Junit, pdf, json'
+        type: 'choice'
+        options:
+          - 'junit'
+          - 'pdf'
+          - 'json'
+          
+# API ID and Key are saved as secrets
+jobs:
+  veracode_security_scan:
+    runs-on: ubuntu-latest
+    name: Run Veracode DAST Essentials Scan
+    steps:
+    
+    - name: install the veracode cli
+      env:
+        VERACODE_API_KEY_ID: ${{secrets.VERACODE_API_ID}}
+        VERACODE_API_KEY_SECRET: ${{secrets.VERACODE_API_KEY}}
+      run: |
+        curl -fsS https://tools.veracode.com/veracode-cli/install | sh
+        ./veracode dynamic results --webhook ${{inputs.webhook_token}} --analysis-run-id ${{inputs.analysis_id}} --format ${{inputs.output_format}}
+
+
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v7.0.2
+      with:
+        name: DAST Results
+        path: ./results.*
+        
