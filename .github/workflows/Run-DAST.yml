@@ -21,7 +21,7 @@ jobs:
         VERACODE_API_KEY_SECRET: ${secrets.VERACODE_API_ID}
       run: |
         curl -fsS https://tools.veracode.com/veracode-cli/install | sh
-        ./veracode dynamic scan ${{inputs.webhook_token}}
+        ./veracode dynamic scan --webhook ${{inputs.webhook_token}}
   
         
         
